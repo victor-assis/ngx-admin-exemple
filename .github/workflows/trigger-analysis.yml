@@ -1,0 +1,9 @@
+name: Run DS Usage Analyzer
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  call-analyzer:
+    uses: victor-assis/Design-System-Metrics/.github/workflows/reusable-analysis.yml@main
