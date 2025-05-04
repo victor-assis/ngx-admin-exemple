@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
 
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   call-analyzer:
-    uses: victor-assis/Design-System-Metrics/.github/workflows/reusable-analysis.yml@main
+    uses: victor-assis/Design-System-Metrics/.github/workflows/reusable-ds-analysis.yml@main

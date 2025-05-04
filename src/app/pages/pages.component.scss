@@ -4,6 +4,8 @@
   ::ng-deep router-outlet + * {
     display: block;
     animation: fade 1s;
+    color: var(--nb-color-basic-100);
+    background-color: $nb-color-basic-100;
 
     @keyframes fade {
       from {
