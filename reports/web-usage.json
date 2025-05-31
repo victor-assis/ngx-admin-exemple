@@ -3,60 +3,61 @@
   "nb": {
     "components": {
       "nb-menu": 1,
-      "nb-icon": 79,
-      "nb-select": 81,
-      "nb-option": 303,
-      "nb-actions": 8,
-      "nb-action": 36,
-      "nb-search": 16,
-      "nb-user": 10,
+      "nb-icon": 41,
+      "nb-select": 41,
+      "nb-option": 152,
+      "nb-actions": 4,
+      "nb-action": 18,
+      "nb-search": 8,
+      "nb-user": 5,
       "nb-layout": 3,
       "nb-layout-header": 3,
       "nb-sidebar": 3,
       "nb-layout-column": 6,
       "nb-layout-footer": 3,
-      "nb-card": 296,
-      "nb-card-header": 241,
-      "nb-card-body": 261,
-      "nb-tabset": 15,
-      "nb-tab": 30,
-      "nb-flip-card": 4,
-      "nb-card-front": 6,
-      "nb-card-back": 6,
-      "nb-progress-bar": 28,
-      "nb-reveal-card": 2,
-      "nb-list": 18,
-      "nb-list-item": 22,
-      "nb-alert": 42,
-      "nb-calendar": 4,
-      "nb-calendar-range": 2,
-      "nb-calendar-month-picker": 2,
-      "nb-chat": 2,
-      "nb-chat-message": 2,
-      "nb-chat-form": 2,
-      "nb-card-footer": 20,
-      "nb-radio-group": 10,
-      "nb-radio": 30,
-      "nb-accordion": 4,
-      "nb-accordion-item": 12,
-      "nb-accordion-item-header": 12,
-      "nb-accordion-item-body": 12,
-      "nb-stepper": 6,
-      "nb-step": 24,
-      "nb-datepicker": 4,
-      "nb-rangepicker": 2,
-      "nb-checkbox": 24,
-      "nb-calendar-day-picker": 2,
-      "nb-select-label": 2,
-      "nb-option-group": 12,
-      "nb-route-tabset": 1
+      "nb-card": 154,
+      "nb-card-header": 125,
+      "nb-card-body": 133,
+      "nb-tabset": 8,
+      "nb-tab": 17,
+      "nb-flip-card": 2,
+      "nb-card-front": 3,
+      "nb-card-back": 3,
+      "nb-progress-bar": 14,
+      "nb-reveal-card": 1,
+      "nb-list": 9,
+      "nb-list-item": 11,
+      "nb-card-footer": 10,
+      "nb-radio-group": 5,
+      "nb-radio": 15,
+      "nb-alert": 21,
+      "nb-calendar-month-picker": 1,
+      "nb-calendar": 2,
+      "nb-calendar-range": 1,
+      "nb-chat": 1,
+      "nb-chat-message": 1,
+      "nb-chat-form": 1,
+      "nb-datepicker": 2,
+      "nb-rangepicker": 1,
+      "nb-checkbox": 12,
+      "nb-accordion": 2,
+      "nb-accordion-item": 6,
+      "nb-accordion-item-header": 6,
+      "nb-accordion-item-body": 6,
+      "nb-stepper": 3,
+      "nb-step": 12,
+      "nb-route-tabset": 1,
+      "nb-tree-grid-row-toggle": 1,
+      "nb-calendar-day-picker": 1,
+      "nb-select-label": 1,
+      "nb-option-group": 6
     },
     "classes": {
-      "nb-square": 2,
-      "nb-snowy-circled": 4,
-      "nb-sunny-circled": 4,
-      "nb-flame-circled": 4,
-      "nb-loop-circled": 4
+      "nb-square": 1,
+      "nb-snowy-circled": 2,
+      "nb-sunny-circled": 2,
+      "nb-flame-circled": 2,
+      "nb-loop-circled": 2
     },
     "customProperties": {
       "--nb-color-basic-100": 1
@@ -67,132 +68,38 @@
     },
     "outsideComponents": {
       "router-outlet": 12,
-      "ngx-one-column-layout": 1,
-      "ngx-profit-card": 2,
-      "ngx-earning-card": 2,
-      "ngx-traffic-reveal-card": 2,
-      "ngx-ecommerce-charts": 2,
-      "ngx-country-orders": 2,
-      "ngx-progress-section": 2,
-      "ngx-ecommerce-visitors-analytics": 2,
-      "ngx-user-activity": 2,
-      "ngx-status-card": 2,
-      "ngx-temperature": 2,
-      "ngx-electricity": 2,
-      "ngx-rooms": 2,
-      "ngx-contacts": 2,
-      "ngx-solar": 2,
-      "ngx-kitten": 2,
-      "ngx-traffic": 2,
-      "ngx-weather": 2,
-      "ngx-security-cameras": 2,
-      "ngx-header": 3,
-      "ng-content": 11,
-      "ngx-footer": 3,
-      "ngx-chartjs-pie": 2,
-      "ngx-chartjs-bar": 2,
-      "ngx-chartjs-line": 2,
-      "ngx-chartjs-multiple-xaxis": 2,
-      "ngx-chartjs-bar-horizontal": 2,
-      "ngx-chartjs-radar": 2,
+      "ng-content": 9,
       "ngx-charts-advanced-pie-chart": 1,
       "ngx-charts-area-chart": 1,
       "ngx-charts-bar-vertical": 1,
       "ngx-charts-line-chart": 1,
       "ngx-charts-pie-chart": 1,
       "ngx-charts-polar-chart": 1,
-      "ngx-d3-pie": 2,
-      "ngx-d3-bar": 2,
-      "ngx-d3-line": 2,
-      "ngx-d3-advanced-pie": 2,
-      "ngx-d3-area-stack": 2,
-      "ngx-echarts-pie": 2,
-      "ngx-echarts-bar": 2,
-      "ngx-echarts-line": 2,
-      "ngx-echarts-multiple-xaxis": 2,
-      "ngx-echarts-area-stack": 2,
-      "ngx-echarts-bar-animation": 2,
-      "ngx-echarts-radar": 2,
-      "ngx-chart-panel-summary": 4,
-      "ngx-chart-panel-header": 4,
-      "ngx-orders-chart": 2,
-      "ngx-profit-chart": 2,
-      "ngx-country-orders-map": 1,
-      "ngx-country-orders-chart": 1,
-      "ngx-earning-card-front": 2,
-      "ngx-earning-card-back": 2,
-      "ngx-stats-card-front": 2,
-      "ngx-stats-card-back": 2,
-      "ngx-traffic-cards-header": 4,
-      "ngx-traffic-front-card": 2,
-      "ngx-traffic-back-card": 2,
-      "ngx-legend-chart": 6,
-      "ngx-visitors-analytics-chart": 2,
-      "ngx-slide-out": 2,
-      "ngx-visitors-statistics": 2,
-      "ngx-nebular-select": 2,
-      "ngx-interactive-progress-bar": 2,
-      "ngx-spinner-sizes": 2,
-      "ngx-spinner-color": 2,
-      "ngx-spinner-in-buttons": 2,
-      "ngx-spinner-in-tabs": 2,
-      "ngx-electricity-chart": 2,
-      "ngx-room-selector": 1,
-      "ngx-player": 1,
-      "ngx-temperature-dragger": 4,
-      "ngx-traffic-chart": 1,
-      "ngx-tiny-mce": 1,
-      "ngx-news-post": 4,
-      "ngx-news-post-placeholder": 4,
-      "ng-template": 18,
-      "google-map": 4,
-      "map-marker": 4,
-      "ngx-search": 2,
-      "ngx-map": 2,
-      "ng2-smart-table": 2,
-      "ng-container": 4,
-      "ngx-fs-icon": 2,
-      "ngx-earning-pie-chart": 2,
-      "ngx-earning-live-update-chart": 2,
-      "ngx-stats-ares-chart": 2,
-      "ngx-stats-bar-animation-chart": 2,
-      "ngx-traffic-bar-chart": 2,
-      "ngx-traffic-bar": 2,
-      "ngx-app": 1
+      "ng-template": 10,
+      "google-map": 2,
+      "map-marker": 2,
+      "ng2-smart-table": 1
     },
     "directives": {
-      "nbisgranted": 2,
-      "nbcontextmenu": 2,
-      "nbbutton": 34,
+      "nbisgranted": 1,
+      "nbcontextmenu": 1,
+      "nbbutton": 118,
+      "nbinput": 41,
+      "nbdatepicker": 3,
       "nbinfinitelist": 2,
-      "nbsteppernext": 2,
-      "nbstepperprevious": 2,
-      "nbinput": 13,
-      "nbdatepicker": 2,
-      "nbpopover": 2,
-      "nbpopovertrigger": 2,
-      "nbpopoverplacement": 2,
-      "nbtooltip": 2,
+      "nbsteppernext": 13,
+      "nbstepperprevious": 8,
+      "nbpopover": 29,
+      "nbpopovertrigger": 22,
+      "nbpopoverplacement": 4,
+      "nbtooltip": 12,
       "nbtooltipicon": 2,
-      "nbtooltipstatus": 2,
-      "nbtooltipplacement": 2,
-      "nbfilterinput": 2,
-      "nbtreegrid": 2,
-      "nbsort": 2,
-      "nbtreegridheaderrow": 2,
-      "nbtreegridheaderrowdef": 2,
-      "nbtreegridrow": 2,
-      "nbtreegridrowdef": 2,
-      "nbtreegridcolumndef": 2,
-      "nbtreegridheadercell": 2,
-      "nbsortheader": 2,
-      "nbtreegridheadercelldef": 2,
-      "nbtreegridcell": 2,
-      "nbtreegridcelldef": 2,
-      "nbspinner": 8,
-      "nbspinnerstatus": 8,
-      "nbspinnersize": 6,
-      "nbspinnermessage": 2
+      "nbtooltipstatus": 6,
+      "nbtooltipplacement": 10,
+      "nbspinner": 18,
+      "nbspinnerstatus": 18,
+      "nbspinnersize": 12,
+      "nbspinnermessage": 6
     },
     "propValues": {
       "nb-menu": {
@@ -204,9 +111,9 @@
         "icon": [
           "menu-2-outline",
           "chevron-right-outline",
-          "showVisitorsStatistics ? 'arrow-forward-outline' : 'arrow-back-outline'",
           "chevron-up-outline",
           "chevron-down-outline",
+          "showVisitorsStatistics ? 'arrow-forward-outline' : 'arrow-back-outline'",
           "item.deltaUp ? 'arrow-up' : 'arrow-down'",
           "phone-outline",
           "month.down ? 'arrow-down' : 'arrow-up'",
@@ -219,11 +126,10 @@
           "search-outline",
           "settings-2-outline",
           "sun-outline",
+          "file-text-outline",
           "icon",
           "earningLiveUpdateCardData.delta.up ? 'arrow-up' : 'arrow-down'",
           "item.delta.up ? 'arrow-up' : 'arrow-down'",
-          "minus",
-          "plus",
           "shuffle-2-outline",
           "skip-back-outline",
           "player.paused ? 'play-circle-outline' : 'pause-circle-outline'",
@@ -231,7 +137,9 @@
           "repeat-outline",
           "volume-down-outline",
           "volume-up-outline",
-          "power-outline"
+          "power-outline",
+          "minus",
+          "plus"
         ],
         "pack": [
           "eva",
@@ -241,8 +149,8 @@
         ],
         "class": [
           "flip-icon",
-          "show-hide-toggle",
           "toggle-icon",
+          "show-hide-toggle",
           "collapse",
           "today-icon",
           "action-icon",
@@ -439,8 +347,8 @@
         "name": [
           "user?.name",
           "c.user.name",
-          "user.name",
-          "Han Solo"
+          "Han Solo",
+          "user.name"
         ],
         "picture": [
           "user?.picture",
@@ -502,14 +410,14 @@
           "table-card",
           "chart-card",
           "solar-card",
+          "actions-card",
+          "inline-form-card",
           "own-scroll",
           "list-card",
           "col-md-12 col-lg-12 col-xxxl-12",
-          "actions-card",
-          "inline-form-card",
-          "form-input-card",
+          "headings-card",
           "popover-card",
-          "headings-card"
+          "form-input-card"
         ],
         "click": [
           "on = !on"
@@ -546,10 +454,10 @@
       "nb-card-body": {
         "class": [
           "checkbox-radio",
-          "result-from-dialog",
           "debounce-card",
-          "select-group",
-          "body"
+          "result-from-dialog",
+          "body",
+          "select-group"
         ]
       },
       "nb-tabset": {
@@ -570,16 +478,16 @@
           "year.title",
           "Temperature",
           "Humidity",
-          "What's up?",
-          "Second Tab",
-          "Tab 1",
-          "Tab 2",
           "Simple Tab #1",
           "Simple Tab #2",
           "Simple Tab #3",
           "Full width tab #1",
           "Full width tab #2",
-          "Full width tab #3"
+          "Full width tab #3",
+          "What's up?",
+          "Second Tab",
+          "Tab 1",
+          "Tab 2"
         ],
         "lazyload": [
           "true"
@@ -685,6 +593,42 @@
           "item"
         ]
       },
+      "nb-card-footer": {
+        "class": [
+          "footer"
+        ]
+      },
+      "nb-radio-group": {
+        "ngmodel": [
+          "temperatureMode",
+          "humidityMode"
+        ],
+        "name": [
+          "temperature-mode",
+          "humidity-mode"
+        ],
+        "value": [
+          "radioGroupValue"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-radio": {
+        "value": [
+          "cool",
+          "warm",
+          "heat",
+          "fan",
+          "'This is value 1'",
+          "'This is value 2'",
+          "'This is value 3'",
+          "'Disabled Value'"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
       "nb-alert": {
         "status": [
           "primary",
@@ -707,6 +651,14 @@
           "primary"
         ]
       },
+      "nb-calendar-month-picker": {
+        "month": [
+          "month"
+        ],
+        "cellcomponent": [
+          "monthCellComponent"
+        ]
+      },
       "nb-calendar": {
         "date": [
           "date",
@@ -725,14 +677,6 @@
       "nb-calendar-range": {
         "range": [
           "range"
-        ]
-      },
-      "nb-calendar-month-picker": {
-        "month": [
-          "month"
-        ],
-        "cellcomponent": [
-          "monthCellComponent"
         ]
       },
       "nb-chat": {
@@ -789,40 +733,41 @@
           "true"
         ]
       },
-      "nb-card-footer": {
-        "class": [
-          "footer"
+      "nb-datepicker": {
+        "#formpicker": [
+          ""
+        ],
+        "#picker": [
+          ""
+        ],
+        "min": [
+          "min"
+        ],
+        "max": [
+          "max"
         ]
       },
-      "nb-radio-group": {
+      "nb-rangepicker": {
+        "#rangepicker": [
+          ""
+        ]
+      },
+      "nb-checkbox": {
+        "status": [
+          "success",
+          "warning",
+          "danger"
+        ],
+        "checked": [
+          ""
+        ],
+        "disabled": [
+          ""
+        ],
         "ngmodel": [
-          "temperatureMode",
-          "humidityMode"
-        ],
-        "name": [
-          "temperature-mode",
-          "humidity-mode"
-        ],
-        "value": [
-          "radioGroupValue"
-        ],
-        "disabled": [
-          ""
-        ]
-      },
-      "nb-radio": {
-        "value": [
-          "cool",
-          "warm",
-          "heat",
-          "fan",
-          "'This is value 1'",
-          "'This is value 2'",
-          "'This is value 3'",
-          "'Disabled Value'"
-        ],
-        "disabled": [
-          ""
+          "destroyByClick",
+          "preventDuplicates",
+          "hasIcon"
         ]
       },
       "nb-accordion": {
@@ -865,41 +810,17 @@
           "true"
         ]
       },
-      "nb-datepicker": {
-        "#formpicker": [
-          ""
-        ],
-        "#picker": [
-          ""
-        ],
-        "min": [
-          "min"
-        ],
-        "max": [
-          "max"
+      "nb-route-tabset": {
+        "tabs": [
+          "tabs"
         ]
       },
-      "nb-rangepicker": {
-        "#rangepicker": [
-          ""
-        ]
-      },
-      "nb-checkbox": {
-        "status": [
-          "success",
-          "warning",
-          "danger"
+      "nb-tree-grid-row-toggle": {
+        "expanded": [
+          "expanded"
         ],
-        "checked": [
-          ""
-        ],
-        "disabled": [
-          ""
-        ],
-        "ngmodel": [
-          "destroyByClick",
-          "preventDuplicates",
-          "hasIcon"
+        "ngif": [
+          "isDir(); else fileIcon"
         ]
       },
       "nb-calendar-day-picker": {
@@ -926,13 +847,93 @@
         "disabled": [
           ""
         ]
-      },
-      "nb-route-tabset": {
-        "tabs": [
-          "tabs"
-        ]
       }
     },
-    "internalComponents": {}
+    "internalComponents": {
+      "ngx-one-column-layout": 1,
+      "ngx-profit-card": 1,
+      "ngx-earning-card": 1,
+      "ngx-traffic-reveal-card": 1,
+      "ngx-ecommerce-charts": 1,
+      "ngx-country-orders": 1,
+      "ngx-progress-section": 1,
+      "ngx-ecommerce-visitors-analytics": 1,
+      "ngx-user-activity": 1,
+      "ngx-status-card": 1,
+      "ngx-temperature": 1,
+      "ngx-electricity": 1,
+      "ngx-rooms": 1,
+      "ngx-contacts": 1,
+      "ngx-solar": 1,
+      "ngx-kitten": 1,
+      "ngx-traffic": 1,
+      "ngx-weather": 1,
+      "ngx-security-cameras": 1,
+      "ngx-header": 3,
+      "ngx-footer": 3,
+      "ngx-chartjs-pie": 1,
+      "ngx-chartjs-bar": 1,
+      "ngx-chartjs-line": 1,
+      "ngx-chartjs-multiple-xaxis": 1,
+      "ngx-chartjs-bar-horizontal": 1,
+      "ngx-chartjs-radar": 1,
+      "ngx-d3-pie": 1,
+      "ngx-d3-bar": 1,
+      "ngx-d3-line": 1,
+      "ngx-d3-advanced-pie": 1,
+      "ngx-d3-area-stack": 1,
+      "ngx-echarts-pie": 1,
+      "ngx-echarts-bar": 1,
+      "ngx-echarts-line": 1,
+      "ngx-echarts-multiple-xaxis": 1,
+      "ngx-echarts-area-stack": 1,
+      "ngx-echarts-bar-animation": 1,
+      "ngx-echarts-radar": 1,
+      "ngx-chart-panel-summary": 2,
+      "ngx-chart-panel-header": 2,
+      "ngx-orders-chart": 1,
+      "ngx-profit-chart": 1,
+      "ngx-country-orders-map": 1,
+      "ngx-country-orders-chart": 1,
+      "ngx-earning-card-front": 1,
+      "ngx-earning-card-back": 1,
+      "ngx-stats-card-front": 1,
+      "ngx-stats-card-back": 1,
+      "ngx-traffic-cards-header": 2,
+      "ngx-traffic-front-card": 1,
+      "ngx-traffic-back-card": 1,
+      "ngx-legend-chart": 3,
+      "ngx-visitors-analytics-chart": 1,
+      "ngx-slide-out": 1,
+      "ngx-visitors-statistics": 1,
+      "ngx-electricity-chart": 1,
+      "ngx-room-selector": 1,
+      "ngx-player": 1,
+      "ngx-tiny-mce": 1,
+      "ngx-temperature-dragger": 2,
+      "ngx-traffic-chart": 1,
+      "ngx-nebular-select": 1,
+      "ngx-interactive-progress-bar": 1,
+      "ngx-spinner-sizes": 1,
+      "ngx-spinner-color": 1,
+      "ngx-spinner-in-buttons": 1,
+      "ngx-spinner-in-tabs": 1,
+      "ngx-news-post": 2,
+      "ngx-news-post-placeholder": 2,
+      "ngx-search": 1,
+      "ngx-map": 1,
+      "ngx-earning-pie-chart": 1,
+      "ngx-stats-ares-chart": 1,
+      "ngx-traffic-bar-chart": 1,
+      "ngx-earning-live-update-chart": 1,
+      "ngx-stats-bar-animation-chart": 1,
+      "ngx-traffic-bar": 1,
+      "ngx-app": 1
+    }
+  },
+  "score": {
+    "nb": "87%",
+    "internal": "9%",
+    "external": "4%"
   }
 }

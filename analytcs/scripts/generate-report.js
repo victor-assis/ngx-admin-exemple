@@ -18,95 +18,81 @@ if (!fs.existsSync(INPUT_PATH)) {
 const usageMap = JSON.parse(fs.readFileSync(INPUT_PATH, 'utf8'));
 const { framework, ...systems } = usageMap;
 
-const count = obj => Object.values(obj || {}).reduce((acc, val) => acc + val, 0);
+// const count = obj => Object.values(obj || {}).reduce((acc, val) => acc + val, 0); // count function no longer needed here for score
 
-const markdownSections = [];
-const finalReport = { framework, score: 0, systems: {} };
+// Initialize finalReport for JSON output - simplified score handling
+const finalReport = { framework, score: usageMap.score || {}, systems: {} };
 
+// Start building the Markdown report string
+let mdReport = "# Web Usage Analysis Report\n\n";
+
+mdReport += "## Overall Summary\n";
+mdReport += `- **Framework Detected**: ${framework}\n`;
+if (usageMap.score) {
+  mdReport += `- **Adoption Score**:\n`;
+  mdReport += `    - **nb**: ${usageMap.score.nb}\n`;
+  mdReport += `    - **Internal**: ${usageMap.score.internal}\n`;
+  mdReport += `    - **External**: ${usageMap.score.external}\n`;
+}
+mdReport += "\n---\n\n";
+
+// Utility functions - can remain the same
+const formatList = (title, obj) => {
+  if (!obj || Object.keys(obj).length === 0) return '';
+  return `### ${title}\n` +
+    Object.entries(obj)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, val]) => `- \`${key}\`: **${val}**`)
+      .join('\n') +
+    '\n\n';
+};
+
+const renderPropsMarkdown = data => {
+  if (!data || Object.keys(data).length === 0) return '';
+  let md = `### 🧬 Props usadas por componente\n\n`;
+  for (const [component, props] of Object.entries(data)) {
+    md += `**${component}**\n`;
+    for (const [prop, values] of Object.entries(props)) {
+      md += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}\n`;
+    }
+    md += '\n';
+  }
+  return md;
+};
+
+// Process each Design System
 for (const [prefix, data] of Object.entries(systems)) {
-  const total =
-    count(data.components) +
-    count(data.classes) +
-    count(data.customProperties) +
-    count(data.scssVariables) +
-    count(data.directives);
+  // For JSON report, store data without the old per-system score
+  finalReport.systems[prefix] = { ...data };
 
-  const totalInternal = Object.values(data.internalComponents || {}).reduce(
-    (acc, val) => acc + val.count,
-    0
-  );
+  let mdSystemSection = `## Design System: \`${prefix}\`\n\n`;
+  // Old per-system score display removed
 
-  let score = 0;
-if (total > 0 && totalInternal > 0) {
-  score = Math.round((total / (total + totalInternal)) * 100);
-} else if (total > 0) {
-  score = 100;
-}
-  finalReport.score += score;
-  finalReport.systems[prefix] = { ...data, score };
+  mdSystemSection += formatList('Component Usage (`<tag>`)', data.components);
+  mdSystemSection += formatList('Directive Usage', data.directives);
+  mdSystemSection += formatList('Class Usage', data.classes);
+  mdSystemSection += formatList('CSS Custom Property Usage', data.customProperties);
+  mdSystemSection += formatList('SCSS Variable Usage', data.scssVariables);
+  mdSystemSection += renderPropsMarkdown(data.propValues);
 
-  let md = `## Design System: \`${prefix}\`
-`;
-  md += `**Adoção estimada:** ${score}%
-
-`;
-
-  const formatList = (title, obj) => {
-    if (!obj || Object.keys(obj).length === 0) return '';
-    return `### ${title}\n` +
-      Object.entries(obj)
-        .sort((a, b) => b[1] - a[1])
-        .map(([key, val]) => `- \`${key}\`: **${val}**`)
-        .join('\n') +
-      '\n\n';
-  };
-
-  const renderPropsMarkdown = data => {
-    if (!data || Object.keys(data).length === 0) return '';
-    let md = `### 🧬 Props usadas por componente\n\n`;
-    for (const [component, props] of Object.entries(data)) {
-      md += `**${component}**\n`;
-      for (const [prop, values] of Object.entries(props)) {
-        md += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}\n`;
-      }
-      md += '\n';
-    }
-    return md;
-  };
-
-  const renderInternalsMarkdown = data => {
-    if (!data || Object.keys(data).length === 0) return '';
-    let md = `### 🧩 Componentes internos da aplicação\n\n`;
-    for (const [comp, info] of Object.entries(data)) {
-      md += `**\`${comp}\`** — usado **${info.count}x**\n`;
-      const used = info.dsComponentsUsed;
-      if (Object.keys(used).length === 0) {
-        md += `- *(sem uso de componentes do design system)*\n\n`;
-      } else {
-        for (const [dsComp, count] of Object.entries(used)) {
-          md += `- \`${dsComp}\`: **${count}** uso(s)\n`;
-        }
-        md += '\n';
-      }
-    }
-    return md;
-  };
-
-  md += formatList('🧩 Componentes (tags)', data.components);
-  md += formatList('🎨 Classes CSS', data.classes);
-  md += formatList('🧪 CSS Custom Properties', data.customProperties);
-  md += formatList('💠 SCSS Tokens', data.scssVariables);
-  md += formatList('🔷 Diretivas Angular/Vue', data.directives);
-  md += renderPropsMarkdown(data.propValues);
-  md += formatList('🚫 Componentes fora do Design System', data.outsideComponents);
-  md += renderInternalsMarkdown(data.internalComponents);
-
-  markdownSections.push(md);
+  mdReport += mdSystemSection + "\n---\n\n";
 }
 
-finalReport.score = Math.round(finalReport.score / Object.keys(systems).length);
+// Add Global Application-Specific Components Section to Markdown
+mdReport += "## Application-Specific Components\n\n";
+const firstSystemPrefix = Object.keys(systems)[0]; // Get the first prefix
+if (firstSystemPrefix && systems[firstSystemPrefix]) {
+  const globalData = systems[firstSystemPrefix];
+  // Note: internalComponents and outsideComponents are now directly under each system prefix in usageMap.
+  // The report will show them for the *first* system encountered. This matches the old behavior implicitly.
+  // If these should be truly global and unique, web-usage.json structure would need adjustment.
+  mdReport += formatList('Internal Application Components', globalData.internalComponents);
+  mdReport += formatList('Unrecognized Custom Components (Outside Components)', globalData.outsideComponents);
+}
+mdReport += "\n---\n\n";
 
+// Save the reports
 fs.writeFileSync(OUTPUT_JSON, JSON.stringify(finalReport, null, 2));
-fs.writeFileSync(OUTPUT_MD, markdownSections.join('\n---\n\n'));
+fs.writeFileSync(OUTPUT_MD, mdReport); // Write the consolidated mdReport string
 
 console.log(`✅ Markdown and JSON reports saved.`);

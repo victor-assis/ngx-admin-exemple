@@ -4,24 +4,25 @@ import { selectAll } from 'css-select';
 /**
  * @param {string} html - conteúdo HTML
  * @param {string[]} dsPrefixes - ex: ['nb', 'idsw']
- * @param {string[]} appPrefixes - ex: ['app', 'shared']
+ * @param {Set<string>} discoveredAngularSelectorsSet - Set of discovered Angular selectors.
  * @returns {{
  *   components: Record<string, number>,
  *   propValues: Record<string, Record<string, string[]>>,
- *   directives: string[],
+ *   directives: Record<string, number>, // Corrected type from previous subtasks
  *   outsideComponents: Record<string, number>,
  *   internalComponents: Record<string, number>
  * }}
  */
-export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
+export function extractHtmlUsage(html, dsPrefixes = [], discoveredAngularSelectorsSet = new Set()) {
   const tagPrefixes = dsPrefixes.map(p => p + '-');
-  const directivePrefixes = dsPrefixes;
-  const appTagPrefixes = appPrefixes.map(p => p + '-');
+  // Prepare lowercase prefixes for directive matching, similar to JSX parser
+  const htmlDirectivePrefixes = dsPrefixes.map(p => p.toLowerCase());
+  // appPrefixes parameter and related logic (like appTagPrefixes) have been removed.
 
   const result = {
     components: {},
     propValues: {},
-    directives: [],
+    directives: {}, // Changed to object for counts
     outsideComponents: {},
     internalComponents: {},
     classes: {}
@@ -35,13 +36,11 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
     const tag = el.name;
     const isCustomElement = tag.includes('-');
     const isDSComponent = tagPrefixes.some(prefix => tag.startsWith(prefix));
-    const isAppComponent = appTagPrefixes.some(prefix => tag.startsWith(prefix));
 
-    // 🔹 COMPONENTE DO DESIGN SYSTEM
     if (isDSComponent) {
       result.components[tag] = (result.components[tag] || 0) + 1;
+      // ... prop value logic (remains unchanged)
       if (!result.propValues[tag]) result.propValues[tag] = {};
-
       for (const [attr, val] of Object.entries(el.attribs)) {
         const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, '');
         if (typeof val === 'string') {
@@ -50,23 +49,10 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
             result.propValues[tag][cleanAttr].push(val);
           }
         }
-
-        // Diretivas do DS (ex: nbButton, idswForm)
-        if (directivePrefixes.some(p => cleanAttr.startsWith(p))) {
-          if (!result.directives.includes(cleanAttr)) {
-            result.directives.push(cleanAttr);
-          }
-        }
       }
-    }
-
-    // 🔸 COMPONENTE INTERNO
-    else if (isAppComponent) {
+    } else if (discoveredAngularSelectorsSet.has(tag)) {
       result.internalComponents[tag] = (result.internalComponents[tag] || 0) + 1;
-    }
-
-    // ⚠️ COMPONENTE EXTERNO
-    else if (isCustomElement) {
+    } else if (isCustomElement) {
       result.outsideComponents[tag] = (result.outsideComponents[tag] || 0) + 1;
     }
 
@@ -81,14 +67,13 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
       }
     }
 
-    // 🔸 Diretivas fora do tagName (ex: matTooltip)
+    // 🔸 Diretivas em qualquer elemento (ex: nbTooltip, idswFormField)
+    // This loop processes attributes for ALL elements, including DS Components, App Components, etc.
     for (const attr of Object.keys(el.attribs)) {
-      const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, '');
-      if (
-        directivePrefixes.some(p => cleanAttr.startsWith(p)) &&
-        !result.directives.includes(cleanAttr)
-      ) {
-        result.directives.push(cleanAttr);
+      const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, ''); // Keep original cleaning
+      // Standardized directive check with length condition and lowercase prefix comparison
+      if (htmlDirectivePrefixes.some(p => cleanAttr.startsWith(p) && cleanAttr.length > p.length)) {
+        result.directives[cleanAttr] = (result.directives[cleanAttr] || 0) + 1;
       }
     }
   }

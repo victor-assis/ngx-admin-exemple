@@ -8,20 +8,23 @@ const traverse = traverseModule.default;
  * Extrai componentes, props, diretivas e componentes internos de um arquivo JSX/TSX.
  * @param {string} filePath - Caminho do arquivo.
  * @param {string[]} dsPrefixes - Prefixos dos componentes e diretivas do DS, ex: ['Nb', 'Idsw']. (Note: para diretivas, o prefixo pode ser minúsculo ex: 'nb')
- * @param {string[]} appPrefixes - Prefixos dos componentes da App, ex: ['App', 'Shared'].
+ * @param {Set<string>} discoveredJsxInternalNamesSet - Set of discovered JSX internal component names.
  * @returns {{
  *   components: Record<string, number>,
- *   propValues: Record<string, Record<string, string[]>>,
+ *   propValues: Record<string, Record<string, (string | number | boolean)[]>>, // Prop values can be string, number or boolean
  *   directives: Record<string, number>,
  *   internalComponents: Record<string, number>,
- *   outsideComponents: Record<string, number>
+ *   outsideComponents: Record<string, number>,
+ *   classes: Record<string, number>
  * }}
  */
-export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
+export function extractJsxUsage(filePath, dsPrefixes = [], discoveredJsxInternalNamesSet = new Set()) {
+  // appPrefixes parameter and related logic/logs have been removed.
+  // The main logic now uses discoveredJsxInternalNamesSet for internal component identification.
   const code = fs.readFileSync(filePath, 'utf8');
   const ast = babelParser.parse(code, {
     sourceType: 'module',
-    plugins: ['jsx', 'typescript', 'decorators-legacy']
+    plugins: ['jsx', 'typescript', 'decorators-legacy', 'deprecatedImportAssert']
   });
 
   const result = {
@@ -29,8 +32,11 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
     propValues: {},
     directives: {},
     internalComponents: {},
-    outsideComponents: {}
+    outsideComponents: {},
+    classes: {} // Initialize classes
   };
+
+  const dsClassPrefixes = dsPrefixes.map(p => `${p.toLowerCase()}-`);
 
   // As diretivas podem ter prefixos diferentes (ex: minúsculos como 'nbButton')
   // enquanto componentes são capitalizados (ex: 'NbButton').
@@ -47,6 +53,7 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
       if (!nameNode || !nameNode.name) return; // Ignora elementos como <></> ou <Component.SubComponent /> por enquanto
 
       const tagName = nameNode.name;
+      // console.log(`[DEBUG JSX Internal] Checking tagName: ${tagName}`);
       const isDSComponent = dsPrefixes.some(p => tagName.startsWith(p));
 
       if (isDSComponent) {
@@ -59,40 +66,49 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
           const propName = attr.name.name;
           if (!propName) continue;
 
-          // Extração de valor de prop (StringLiteral)
-          const valueNode = attr.value;
-          if (valueNode && valueNode.type === 'StringLiteral') {
-            const value = valueNode.value;
-            if (!result.propValues[tagName][propName]) result.propValues[tagName][propName] = [];
+          let value; // Variable to store the extracted prop value
+
+          if (attr.value === null) {
+            // Case: <MyComponent disabled />
+            value = true;
+          } else if (attr.value.type === 'StringLiteral') {
+            // Case: <MyComponent name="text" />
+            value = attr.value.value;
+          } else if (attr.value.type === 'JSXExpressionContainer') {
+            // Case: <MyComponent count={5} active={true} size={'large'} />
+            const expression = attr.value.expression;
+            if (expression.type === 'StringLiteral' ||
+                expression.type === 'NumericLiteral' ||
+                expression.type === 'BooleanLiteral') {
+              value = expression.value;
+            }
+            // Optional: Handle Identifier 'undefined' or 'null' if needed later
+            // else if (expression.type === 'Identifier' && (expression.name === 'undefined' || expression.name === 'null')) {
+            //   value = expression.name; // Or skip
+            // }
+          }
+
+          if (value !== undefined) {
+            if (!result.propValues[tagName][propName]) {
+              result.propValues[tagName][propName] = [];
+            }
             if (!result.propValues[tagName][propName].includes(value)) {
               result.propValues[tagName][propName].push(value);
             }
           }
 
-          // Verificação de diretivas como atributos em componentes DS
-          // Ex: <NbButton nbButton /> ou <NbInput idswInput />
-          // Assumindo que prefixos de diretiva são minúsculos (ex: 'nb', 'idsw')
-          if (directiveAttributePrefixes.some(dp => propName.startsWith(dp) && propName !== dp)) { // Evitar que 'nb' em <NbCard nb /> seja contado como diretiva
-             // Verifica se a diretiva (propName) realmente pertence ao DS (ex: nbButton, idswFormField)
-             // Esta é uma simplificação; pode precisar de uma lista mais explícita de diretivas.
-            if (dsPrefixes.some(dsp => propName.toLowerCase().startsWith(dsp.toLowerCase()) && propName.length > dsp.length)) {
-                 result.directives[propName] = (result.directives[propName] || 0) + 1;
-            }
-          }
+          // Prop value extraction is done for DS Components.
+          // Directive checking will be done in a separate loop for all elements.
         }
+      } else if (discoveredJsxInternalNamesSet.has(tagName)) {
+        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isDiscoveredInternal: true`);
+        result.internalComponents[tagName] = (result.internalComponents[tagName] || 0) + 1;
       } else {
-        // Não é componente DS, verificar se é componente interno da aplicação
-        const isAppComponent = appPrefixes.some(p => tagName.startsWith(p));
-        if (isAppComponent) {
-          result.internalComponents[tagName] = (result.internalComponents[tagName] || 0) + 1;
-        } else {
-          // Não é componente DS nem componente interno da App.
-          // Verificar se é um componente "externo" (ex: de terceiros, ou customizado não App).
-          // Heurística: começa com letra maiúscula e não é tag HTML padrão.
-          // Tags HTML padrão (div, span, etc.) são minúsculas.
-          if (/^[A-Z]/.test(tagName)) {
-            result.outsideComponents[tagName] = (result.outsideComponents[tagName] || 0) + 1;
-          }
+        // Not a DS Component, not a discovered Internal Component.
+        // Check if it's an "outside" component (PascalCase, not standard HTML tag).
+        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isDiscoveredInternal: false, not DS`);
+        if (/^[A-Z]/.test(tagName)) {
+          result.outsideComponents[tagName] = (result.outsideComponents[tagName] || 0) + 1;
         }
       }
 
@@ -103,6 +119,51 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
       // Por ora, focamos em diretivas como atributos de componentes DS.
       // Se precisarmos expandir, podemos adicionar outro loop aqui pelos atributos
       // e verificar contra `directiveAttributePrefixes` para qualquer `tagName`.
+
+      // --- Directive Extraction (All Elements) ---
+      for (const attr of path.node.attributes) {
+        if (attr.type === 'JSXAttribute' && attr.name && attr.name.name) {
+          const propName = attr.name.name;
+          // Simplified directive check
+          if (directiveAttributePrefixes.some(prefix => propName.toLowerCase().startsWith(prefix) && propName.length > prefix.length)) {
+            result.directives[propName] = (result.directives[propName] || 0) + 1;
+          }
+        }
+      }
+
+      // --- CSS Class Extraction (All Elements) ---
+      // This applies to any JSX element, not just DS components.
+      for (const attr of path.node.attributes) {
+        if (attr.type === 'JSXAttribute' && attr.name && (attr.name.name === 'className' || attr.name.name === 'class')) {
+          const processClasses = (classString) => {
+            if (typeof classString !== 'string') return;
+            const classes = classString.split(/\s+/).filter(Boolean);
+            for (const cls of classes) {
+              if (dsClassPrefixes.some(p => cls.startsWith(p))) {
+                result.classes[cls] = (result.classes[cls] || 0) + 1;
+              }
+            }
+          };
+
+          if (attr.value) {
+            if (attr.value.type === 'StringLiteral') {
+              processClasses(attr.value.value);
+            } else if (attr.value.type === 'JSXExpressionContainer') {
+              const expression = attr.value.expression;
+              if (expression.type === 'StringLiteral') {
+                processClasses(expression.value);
+              } else if (expression.type === 'TemplateLiteral') {
+                expression.quasis.forEach(quasi => {
+                  processClasses(quasi.value.cooked);
+                });
+              }
+              // Note: More complex expressions in JSXExpressionContainer (e.g., function calls, variables)
+              // are not statically analyzed here. Only string literals and template literals are processed.
+            }
+          }
+          break; // Found className/class, no need to check other attributes for this purpose
+        }
+      }
     }
   });
 
