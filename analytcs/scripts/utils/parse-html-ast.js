@@ -15,13 +15,14 @@ import { selectAll } from 'css-select';
  */
 export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
   const tagPrefixes = dsPrefixes.map(p => p + '-');
-  const directivePrefixes = dsPrefixes;
+  // Prepare lowercase prefixes for directive matching, similar to JSX parser
+  const htmlDirectivePrefixes = dsPrefixes.map(p => p.toLowerCase());
   const appTagPrefixes = appPrefixes.map(p => p + '-');
 
   const result = {
     components: {},
     propValues: {},
-    directives: [],
+    directives: {}, // Changed to object for counts
     outsideComponents: {},
     internalComponents: {},
     classes: {}
@@ -51,12 +52,8 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
           }
         }
 
-        // Diretivas do DS (ex: nbButton, idswForm)
-        if (directivePrefixes.some(p => cleanAttr.startsWith(p))) {
-          if (!result.directives.includes(cleanAttr)) {
-            result.directives.push(cleanAttr);
-          }
-        }
+        // Diretivas do DS (ex: nbButton, idswForm) - This specific block will be removed
+        // Directive checking will be handled by the general loop for all elements later.
       }
     }
 
@@ -81,14 +78,13 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
       }
     }
 
-    // 🔸 Diretivas fora do tagName (ex: matTooltip)
+    // 🔸 Diretivas em qualquer elemento (ex: nbTooltip, idswFormField)
+    // This loop processes attributes for ALL elements, including DS Components, App Components, etc.
     for (const attr of Object.keys(el.attribs)) {
-      const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, '');
-      if (
-        directivePrefixes.some(p => cleanAttr.startsWith(p)) &&
-        !result.directives.includes(cleanAttr)
-      ) {
-        result.directives.push(cleanAttr);
+      const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, ''); // Keep original cleaning
+      // Standardized directive check with length condition and lowercase prefix comparison
+      if (htmlDirectivePrefixes.some(p => cleanAttr.startsWith(p) && cleanAttr.length > p.length)) {
+        result.directives[cleanAttr] = (result.directives[cleanAttr] || 0) + 1;
       }
     }
   }

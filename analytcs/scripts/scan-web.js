@@ -180,6 +180,22 @@ for (const file of jsFiles) {
         target.outsideComponents[tag] = (target.outsideComponents[tag] || 0) + count;
       }
     }
+
+    // Merge CSS class usage from JSX/TSX
+    if (jsxUsage && jsxUsage.classes && typeof jsxUsage.classes === 'object') {
+      for (const [cls, count] of Object.entries(jsxUsage.classes)) {
+        // jsxUsage.classes contains DS-prefixed classes (e.g., "nb-button")
+        // Filter for the current prefix being processed in the loop.
+        // DS_PREFIXES are like ['nb'], classes are like 'nb-button'.
+        // The check in extractJsxUsage is `dsClassPrefixes.some(p => cls.startsWith(p))`
+        // where dsClassPrefixes are `nb-`, `idsw-` etc.
+        // So, cls already has the full prefix e.g. "nb-button".
+        // We need to ensure it matches the *current* `prefix` from `DS_PREFIXES`.
+        if (cls.toLowerCase().startsWith(prefix.toLowerCase() + '-')) {
+          target.classes[cls] = (target.classes[cls] || 0) + count;
+        }
+      }
+    }
   }
 }
 
