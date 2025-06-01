@@ -248,9 +248,18 @@ function mergeHtmlUsage(htmlResult, target, prefix) {
       }
     }
   }
-  for (const directive of htmlResult.directives) {
-    if (!directive.toLowerCase().startsWith(prefix)) continue;
-    target.directives[directive] = (target.directives[directive] || 0) + 1;
+  // Merge directives
+  if (htmlResult.directives && typeof htmlResult.directives === 'object') {
+    for (const [directive, count] of Object.entries(htmlResult.directives)) {
+      // Assuming parse-html-ast.js ensures directives are correctly DS-prefixed.
+      // The prefix check here is for ensuring it belongs to the current DS context being processed.
+      if (directive.toLowerCase().startsWith(prefix.toLowerCase())) {
+        target.directives[directive] = (target.directives[directive] || 0) + count;
+      }
+    }
+  } else if (htmlResult.directives) {
+    // Add a warning if htmlResult.directives is not an object but exists, to help diagnose
+    console.warn(`[scan-web] Warning: htmlResult.directives in mergeHtmlUsage was expected to be an object, but got: ${typeof htmlResult.directives}`);
   }
   for (const [tag, count] of Object.entries(htmlResult.outsideComponents)) {
     target.outsideComponents[tag] = (target.outsideComponents[tag] || 0) + count;
