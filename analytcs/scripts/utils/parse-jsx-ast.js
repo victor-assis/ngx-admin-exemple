@@ -18,6 +18,7 @@ const traverse = traverseModule.default;
  * }}
  */
 export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
+  console.log(`[DEBUG JSX Internal] Received appPrefixes: ${JSON.stringify(appPrefixes)}`);
   const code = fs.readFileSync(filePath, 'utf8');
   const ast = babelParser.parse(code, {
     sourceType: 'module',
@@ -50,6 +51,7 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
       if (!nameNode || !nameNode.name) return; // Ignora elementos como <></> ou <Component.SubComponent /> por enquanto
 
       const tagName = nameNode.name;
+      // console.log(`[DEBUG JSX Internal] Checking tagName: ${tagName}`);
       const isDSComponent = dsPrefixes.some(p => tagName.startsWith(p));
 
       if (isDSComponent) {
@@ -99,7 +101,9 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
       } else {
         // Não é componente DS, verificar se é componente interno da aplicação
         const isAppComponent = appPrefixes.some(p => tagName.startsWith(p));
+        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isAppComponent: ${isAppComponent}`);
         if (isAppComponent) {
+          console.log(`[DEBUG JSX Internal] Counting JSX internal component: ${tagName}`);
           result.internalComponents[tagName] = (result.internalComponents[tagName] || 0) + 1;
         } else {
           // Não é componente DS nem componente interno da App.

@@ -18,6 +18,7 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
   // Prepare lowercase prefixes for directive matching, similar to JSX parser
   const htmlDirectivePrefixes = dsPrefixes.map(p => p.toLowerCase());
   const appTagPrefixes = appPrefixes.map(p => p + '-');
+  console.log(`[DEBUG HTML Internal] Received appPrefixes: ${JSON.stringify(appPrefixes)}, Derived appTagPrefixes: ${JSON.stringify(appTagPrefixes)}`);
 
   const result = {
     components: {},
@@ -34,9 +35,11 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
   for (const el of elements) {
     if (!el.name || !el.attribs) continue;
     const tag = el.name;
+    // console.log(`[DEBUG HTML Internal] Checking tag: ${tag}`);
     const isCustomElement = tag.includes('-');
     const isDSComponent = tagPrefixes.some(prefix => tag.startsWith(prefix));
     const isAppComponent = appTagPrefixes.some(prefix => tag.startsWith(prefix));
+    // console.log(`[DEBUG HTML Internal] Tag: ${tag}, isAppComponent: ${isAppComponent}`);
 
     // 🔹 COMPONENTE DO DESIGN SYSTEM
     if (isDSComponent) {
@@ -59,6 +62,7 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
 
     // 🔸 COMPONENTE INTERNO
     else if (isAppComponent) {
+      console.log(`[DEBUG HTML Internal] Counting HTML internal component: ${tag}`);
       result.internalComponents[tag] = (result.internalComponents[tag] || 0) + 1;
     }
 
