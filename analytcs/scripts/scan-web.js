@@ -14,6 +14,8 @@ const OUTPUT_PATH = nodePath.resolve('reports/web-usage.json');
 const DS_PREFIXES = ['nb'];
 const APP_PREFIXES = ['app', 'shared'];
 
+const processedTemplateUrls = new Set(); // For Angular template double counting fix
+
 const usageMap = {
   framework: 'unknown'
 };
@@ -97,6 +99,7 @@ function extractAngularUsageFromTs(filePath, dsPrefixes, appPrefixes) {
                         const templatePathResolved = nodePath.resolve(nodePath.dirname(filePath), templateUrl);
                         if (fs.existsSync(templatePathResolved)) {
                           htmlContent = fs.readFileSync(templatePathResolved, 'utf8');
+                          processedTemplateUrls.add(templatePathResolved); // Add to processed set
                         } else {
                           console.warn(`[scan-web] TemplateUrl not found: ${templatePathResolved} referenced in ${filePath}`);
                         }
@@ -138,12 +141,13 @@ for (const file of jsFiles) {
     const target = usageMap[prefix];
 
     if (angularUsage) {
-      mergeHtmlUsage(angularUsage, target, prefix);
+      mergeHtmlUsage(angularUsage, target, prefix); // Reverted: Removed filePath
     }
 
     if (jsxUsage && jsxUsage.components && typeof jsxUsage.components === 'object') {
       for (const [tag, count] of Object.entries(jsxUsage.components)) {
-        if (tag.toLowerCase().startsWith(prefix)) {
+        if (tag.toLowerCase().startsWith(prefix)) { // prefix is 'nb'
+          // Removed NbIcon logging
           target.components[tag] = (target.components[tag] || 0) + count;
         }
       }
@@ -201,11 +205,16 @@ for (const file of jsFiles) {
 
 // 📦 Análise HTML/Vue
 for (const file of htmlFiles) {
+  const absoluteFilePath = nodePath.resolve(file); // Ensure absolute path for comparison
+  if (processedTemplateUrls.has(absoluteFilePath)) {
+    // console.log(`[DEBUG] Skipping already processed Angular template: ${file}`); // Optional debug log
+    continue; // Skip this file
+  }
   const content = fs.readFileSync(file, 'utf8');
   const htmlResult = extractHtmlUsage(content, DS_PREFIXES, APP_PREFIXES);
   for (const prefix of DS_PREFIXES) {
     const target = usageMap[prefix];
-    mergeHtmlUsage(htmlResult, target, prefix);
+    mergeHtmlUsage(htmlResult, target, prefix); // Reverted: Removed filePath
   }
 }
 
@@ -231,9 +240,10 @@ for (const file of cssFiles) {
 }
 
 // 🔗 Utilitário de Merge
-function mergeHtmlUsage(htmlResult, target, prefix) {
+function mergeHtmlUsage(htmlResult, target, prefix) { // Reverted: Removed filePath parameter
   for (const [tag, count] of Object.entries(htmlResult.components)) {
-    if (!tag.toLowerCase().startsWith(prefix)) continue;
+    if (!tag.toLowerCase().startsWith(prefix)) continue; // prefix is 'nb'
+    // Removed nb-icon logging
     target.components[tag] = (target.components[tag] || 0) + count;
   }
   for (const [tag, props] of Object.entries(htmlResult.propValues)) {
