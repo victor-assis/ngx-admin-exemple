@@ -11,14 +11,17 @@ const traverse = traverseModule.default;
  * @param {string[]} appPrefixes - Prefixos dos componentes da App, ex: ['App', 'Shared'].
  * @returns {{
  *   components: Record<string, number>,
- *   propValues: Record<string, Record<string, string[]>>,
+ *   propValues: Record<string, Record<string, (string | number | boolean)[]>>, // Prop values can be string, number or boolean
  *   directives: Record<string, number>,
  *   internalComponents: Record<string, number>,
- *   outsideComponents: Record<string, number>
+ *   outsideComponents: Record<string, number>,
+ *   classes: Record<string, number>
  * }}
  */
-export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
-  console.log(`[DEBUG JSX Internal] Received appPrefixes: ${JSON.stringify(appPrefixes)}`);
+export function extractJsxUsage(filePath, dsPrefixes = [], discoveredJsxInternalNamesSet = new Set(), appPrefixes = []) {
+  // appPrefixes is kept for now for compatibility, will be removed later.
+  // The main logic now uses discoveredJsxInternalNamesSet.
+  console.log(`[DEBUG JSX Internal] Received appPrefixes (to be deprecated): ${JSON.stringify(appPrefixes)}, Using discoveredJsxInternalNamesSet.`);
   const code = fs.readFileSync(filePath, 'utf8');
   const ast = babelParser.parse(code, {
     sourceType: 'module',
@@ -98,21 +101,16 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
           // Prop value extraction is done for DS Components.
           // Directive checking will be done in a separate loop for all elements.
         }
+      } else if (discoveredJsxInternalNamesSet.has(tagName)) {
+        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isDiscoveredInternal: true`);
+        console.log(`[DEBUG JSX Internal] Counting JSX internal component (from discovered set): ${tagName}`);
+        result.internalComponents[tagName] = (result.internalComponents[tagName] || 0) + 1;
       } else {
-        // Não é componente DS, verificar se é componente interno da aplicação
-        const isAppComponent = appPrefixes.some(p => tagName.startsWith(p));
-        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isAppComponent: ${isAppComponent}`);
-        if (isAppComponent) {
-          console.log(`[DEBUG JSX Internal] Counting JSX internal component: ${tagName}`);
-          result.internalComponents[tagName] = (result.internalComponents[tagName] || 0) + 1;
-        } else {
-          // Não é componente DS nem componente interno da App.
-          // Verificar se é um componente "externo" (ex: de terceiros, ou customizado não App).
-          // Heurística: começa com letra maiúscula e não é tag HTML padrão.
-          // Tags HTML padrão (div, span, etc.) são minúsculas.
-          if (/^[A-Z]/.test(tagName)) {
-            result.outsideComponents[tagName] = (result.outsideComponents[tagName] || 0) + 1;
-          }
+        // Not a DS Component, not a discovered Internal Component.
+        // Check if it's an "outside" component (PascalCase, not standard HTML tag).
+        // console.log(`[DEBUG JSX Internal] tagName: ${tagName}, isDiscoveredInternal: false, not DS`);
+        if (/^[A-Z]/.test(tagName)) {
+          result.outsideComponents[tagName] = (result.outsideComponents[tagName] || 0) + 1;
         }
       }
 

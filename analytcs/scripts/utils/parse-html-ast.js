@@ -8,17 +8,18 @@ import { selectAll } from 'css-select';
  * @returns {{
  *   components: Record<string, number>,
  *   propValues: Record<string, Record<string, string[]>>,
- *   directives: string[],
+ *   directives: Record<string, number>, // Corrected type from previous subtasks
  *   outsideComponents: Record<string, number>,
  *   internalComponents: Record<string, number>
  * }}
  */
-export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
+export function extractHtmlUsage(html, dsPrefixes = [], discoveredAngularSelectorsSet = new Set(), appPrefixes = []) {
   const tagPrefixes = dsPrefixes.map(p => p + '-');
   // Prepare lowercase prefixes for directive matching, similar to JSX parser
   const htmlDirectivePrefixes = dsPrefixes.map(p => p.toLowerCase());
-  const appTagPrefixes = appPrefixes.map(p => p + '-');
-  console.log(`[DEBUG HTML Internal] Received appPrefixes: ${JSON.stringify(appPrefixes)}, Derived appTagPrefixes: ${JSON.stringify(appTagPrefixes)}`);
+  // const appTagPrefixes = appPrefixes.map(p => p + '-'); // Removed
+  console.log(`[DEBUG HTML Internal] Received appPrefixes: ${JSON.stringify(appPrefixes)}, Using discoveredAngularSelectorsSet instead.`);
+
 
   const result = {
     components: {},
@@ -36,16 +37,15 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
     if (!el.name || !el.attribs) continue;
     const tag = el.name;
     // console.log(`[DEBUG HTML Internal] Checking tag: ${tag}`);
-    const isCustomElement = tag.includes('-');
+    const isCustomElement = tag.includes('-'); // e.g. my-component, nb-button
     const isDSComponent = tagPrefixes.some(prefix => tag.startsWith(prefix));
-    const isAppComponent = appTagPrefixes.some(prefix => tag.startsWith(prefix));
-    // console.log(`[DEBUG HTML Internal] Tag: ${tag}, isAppComponent: ${isAppComponent}`);
+    // const isAppComponent = appTagPrefixes.some(prefix => tag.startsWith(prefix)); // Removed
+    // console.log(`[DEBUG HTML Internal] Tag: ${tag}, isAppComponent: ${isAppComponent}`); // Old log refers to removed var
 
-    // 🔹 COMPONENTE DO DESIGN SYSTEM
     if (isDSComponent) {
       result.components[tag] = (result.components[tag] || 0) + 1;
+      // ... prop value logic (remains unchanged)
       if (!result.propValues[tag]) result.propValues[tag] = {};
-
       for (const [attr, val] of Object.entries(el.attribs)) {
         const cleanAttr = attr.replace(/[\[\]\(\)\*]/g, '');
         if (typeof val === 'string') {
@@ -54,20 +54,11 @@ export function extractHtmlUsage(html, dsPrefixes = [], appPrefixes = []) {
             result.propValues[tag][cleanAttr].push(val);
           }
         }
-
-        // Diretivas do DS (ex: nbButton, idswForm) - This specific block will be removed
-        // Directive checking will be handled by the general loop for all elements later.
       }
-    }
-
-    // 🔸 COMPONENTE INTERNO
-    else if (isAppComponent) {
-      console.log(`[DEBUG HTML Internal] Counting HTML internal component: ${tag}`);
+    } else if (discoveredAngularSelectorsSet.has(tag)) {
+      console.log(`[DEBUG HTML Internal] Counting HTML internal component (from discovered Angular selector): ${tag}`);
       result.internalComponents[tag] = (result.internalComponents[tag] || 0) + 1;
-    }
-
-    // ⚠️ COMPONENTE EXTERNO
-    else if (isCustomElement) {
+    } else if (isCustomElement) {
       result.outsideComponents[tag] = (result.outsideComponents[tag] || 0) + 1;
     }
 

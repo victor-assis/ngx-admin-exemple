@@ -8,6 +8,7 @@ const traverse = traverseModule.default;
 import { extractHtmlUsage } from './utils/parse-html-ast.js';
 import { extractCssTokens } from './utils/parse-css-tokens.js';
 import { extractJsxUsage } from './utils/parse-jsx-ast.js';
+import { discoverJsxInternalComponentNames } from './utils/discover-jsx-names.js';
 
 // Use the renamed import for global scope path operations
 const OUTPUT_PATH = nodePath.resolve('reports/web-usage.json');
@@ -15,6 +16,8 @@ const DS_PREFIXES = ['nb'];
 const APP_PREFIXES = ['app', 'shared'];
 
 const processedTemplateUrls = new Set(); // For Angular template double counting fix
+const discoveredAngularSelectors = new Set();
+const discoveredJsxInternalNames = new Set();
 
 const usageMap = {
   framework: 'unknown'
@@ -54,6 +57,14 @@ const jsFiles = allFiles.filter(f => f.endsWith('.ts') || f.endsWith('.js') || f
 const htmlFiles = allFiles.filter(f => f.endsWith('.html') || f.endsWith('.vue'));
 const cssFiles = allFiles.filter(f => f.endsWith('.css') || f.endsWith('.scss'));
 
+console.log('[Discovery Pass] Identifying JSX internal component definitions...');
+const capitalizedDsPrefixesForDiscovery = DS_PREFIXES.map(p => p.charAt(0).toUpperCase() + p.slice(1));
+for (const file of jsFiles) {
+    const foundJsxNames = discoverJsxInternalComponentNames(file, capitalizedDsPrefixesForDiscovery);
+    foundJsxNames.forEach(name => discoveredJsxInternalNames.add(name));
+}
+console.log(`[Discovery Pass] Discovered JSX Internal Names: ${JSON.stringify(Array.from(discoveredJsxInternalNames))}`);
+
 /**
  * Extracts Angular component template usage from a TypeScript file.
  * @param {string} filePath Path to the TypeScript file.
@@ -62,6 +73,7 @@ const cssFiles = allFiles.filter(f => f.endsWith('.css') || f.endsWith('.scss'))
  * @returns {object|null} Usage data from extractHtmlUsage, or null.
  */
 function extractAngularUsageFromTs(filePath, dsPrefixes, appPrefixes) {
+  const dsTagPrefixes = dsPrefixes.map(p => p + '-'); // e.g., ['nb-']
   try {
     const code = fs.readFileSync(filePath, 'utf8');
     const ast = babelParser.parse(code, {
@@ -105,20 +117,40 @@ function extractAngularUsageFromTs(filePath, dsPrefixes, appPrefixes) {
                         }
                       }
                       break; // Found templateUrl
+                    } else if (prop.key.name === 'selector' && prop.value.type === 'StringLiteral') {
+                      const selector = prop.value.value;
+                      // Basic check: is it an element selector and not a DS component?
+                      const isPotentialElementSelector = /^[a-zA-Z0-9_]+-[a-zA-Z0-9_-]*$/.test(selector);
+
+                      if (selector && isPotentialElementSelector) {
+                        const isDsComponentSelector = dsTagPrefixes.some(dsp => selector.startsWith(dsp));
+                        if (!isDsComponentSelector) {
+                          discoveredAngularSelectors.add(selector);
+                        }
+                      }
                     }
                   }
                 }
               }
             }
-            if (htmlContent) break; // Found component with template/templateUrl
+            // No need to break if only selector found, might still need template/templateUrl
+            // if (htmlContent) break;
           }
         }
-        if (htmlContent) astPath.stop(); // Stop traversal if template found in a class
+        // Stop traversal if template found in a class, but allow selector processing to continue for all decorators.
+        // This means if a file has multiple components, all selectors can be found.
+        // if (htmlContent) astPath.stop(); // This might be too early if we want all selectors from a file.
+                                          // However, typical Angular files have one component.
+                                          // For now, let's keep it as is, prioritizing template extraction.
+                                          // If a component has a selector but no template/templateUrl, htmlContent remains null.
       }
     });
 
+    // The function's main purpose is to return HTML content for parsing.
+    // Selector discovery is a side-effect for populating the global set.
     if (htmlContent) {
-      return extractHtmlUsage(htmlContent, dsPrefixes, appPrefixes);
+      // Pass discoveredAngularSelectors (global set) and empty array for appPrefixes (deprecated)
+      return extractHtmlUsage(htmlContent, dsPrefixes, discoveredAngularSelectors, []);
     }
   } catch (error) {
     console.warn(`[scan-web] Error parsing Angular TS file ${filePath}:`, error.message);
@@ -134,8 +166,9 @@ for (const file of jsFiles) {
   }
 
   const capitalizedDsPrefixes = DS_PREFIXES.map(p => p.charAt(0).toUpperCase() + p.slice(1));
-  const capitalizedAppPrefixes = APP_PREFIXES.map(p => p.charAt(0).toUpperCase() + p.slice(1));
-  const jsxUsage = extractJsxUsage(file, capitalizedDsPrefixes, capitalizedAppPrefixes);
+  // const capitalizedAppPrefixes = APP_PREFIXES.map(p => p.charAt(0).toUpperCase() + p.slice(1)); // Will be removed
+  // Pass discoveredJsxInternalNames (global set) and empty array for appPrefixes (deprecated)
+  const jsxUsage = extractJsxUsage(file, capitalizedDsPrefixes, discoveredJsxInternalNames, []);
 
   for (const prefix of DS_PREFIXES) {
     const target = usageMap[prefix];
@@ -203,6 +236,8 @@ for (const file of jsFiles) {
   }
 }
 
+console.log(`[Discovery Pass] Discovered Angular Selectors: ${JSON.stringify(Array.from(discoveredAngularSelectors))}`);
+
 // 📦 Análise HTML/Vue
 for (const file of htmlFiles) {
   const absoluteFilePath = nodePath.resolve(file); // Ensure absolute path for comparison
@@ -211,7 +246,8 @@ for (const file of htmlFiles) {
     continue; // Skip this file
   }
   const content = fs.readFileSync(file, 'utf8');
-  const htmlResult = extractHtmlUsage(content, DS_PREFIXES, APP_PREFIXES);
+  // Pass discoveredAngularSelectors (global set) and empty array for appPrefixes (deprecated)
+  const htmlResult = extractHtmlUsage(content, DS_PREFIXES, discoveredAngularSelectors, []);
   for (const prefix of DS_PREFIXES) {
     const target = usageMap[prefix];
     mergeHtmlUsage(htmlResult, target, prefix); // Reverted: Removed filePath
