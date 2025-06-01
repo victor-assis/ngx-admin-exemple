@@ -45,7 +45,7 @@ else if (fs.existsSync('package.json')) {
 }
 
 const allFiles = await fg(['**/*.{ts,tsx,js,jsx,html,vue,css,scss}'], {
-  ignore: ['node_modules', 'dist', 'build', 'reports', 'analyzer']
+  ignore: ['**/node_modules/**', 'dist', 'build', 'reports', 'analyzer']
 });
 
 const jsFiles = allFiles.filter(f => f.endsWith('.ts') || f.endsWith('.js') || f.endsWith('.tsx') || f.endsWith('.jsx'));
@@ -64,7 +64,7 @@ function extractAngularUsageFromTs(filePath, dsPrefixes, appPrefixes) {
     const code = fs.readFileSync(filePath, 'utf8');
     const ast = babelParser.parse(code, {
       sourceType: 'module',
-      plugins: ['typescript', 'decorators-legacy']
+      plugins: ['typescript', 'decorators-legacy', 'deprecatedImportAssert']
     });
 
     let htmlContent = null;

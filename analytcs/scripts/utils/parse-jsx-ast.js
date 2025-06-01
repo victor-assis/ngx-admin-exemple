@@ -21,7 +21,7 @@ export function extractJsxUsage(filePath, dsPrefixes = [], appPrefixes = []) {
   const code = fs.readFileSync(filePath, 'utf8');
   const ast = babelParser.parse(code, {
     sourceType: 'module',
-    plugins: ['jsx', 'typescript', 'decorators-legacy']
+    plugins: ['jsx', 'typescript', 'decorators-legacy', 'deprecatedImportAssert']
   });
 
   const result = {
