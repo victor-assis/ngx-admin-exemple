@@ -1,0 +1,29 @@
+{
+  "framework": "unknown",
+  "nb": {
+    "components": {},
+    "classes": {},
+    "customProperties": {},
+    "scssVariables": {},
+    "outsideComponents": {},
+    "directives": {},
+    "propValues": {},
+    "internalComponents": {}
+  },
+  "mat": {
+    "components": {},
+    "classes": {},
+    "customProperties": {},
+    "scssVariables": {},
+    "outsideComponents": {},
+    "directives": {},
+    "propValues": {},
+    "internalComponents": {}
+  },
+  "score": {
+    "nb": "0%",
+    "mat": "0%",
+    "internal": "0%",
+    "external": "0%"
+  }
+}

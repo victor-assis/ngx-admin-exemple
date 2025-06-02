@@ -12,7 +12,8 @@ import { discoverJsxInternalComponentNames } from './utils/discover-jsx-names.js
 
 // Use the renamed import for global scope path operations
 const OUTPUT_PATH = nodePath.resolve('reports/web-usage.json');
-const DS_PREFIXES = ['nb'];
+const DS_PREFIXES = ['nb', 'mat'];
+const firstDsPrefix = DS_PREFIXES.length > 0 ? DS_PREFIXES[0] : null;
 
 const processedTemplateUrls = new Set(); // For Angular template double counting fix
 const discoveredAngularSelectors = new Set();
@@ -223,7 +224,7 @@ for (const file of jsFiles) {
     const target = usageMap[prefix];
 
     if (angularUsage) {
-      mergeHtmlUsage(angularUsage, target, prefix); // Reverted: Removed filePath
+      mergeHtmlUsage(angularUsage, target, prefix, firstDsPrefix); // Reverted: Removed filePath
     }
 
     if (jsxUsage && jsxUsage.components && typeof jsxUsage.components === 'object') {
@@ -236,7 +237,7 @@ for (const file of jsFiles) {
     }
     if (jsxUsage && jsxUsage.propValues && typeof jsxUsage.propValues === 'object') {
       for (const [tag, props] of Object.entries(jsxUsage.propValues)) {
-        if (tag.toLowerCase().startsWith(prefix)) {
+        if (firstDsPrefix && prefix === firstDsPrefix && tag.toLowerCase().startsWith(firstDsPrefix)) {
           if (!target.propValues[tag]) target.propValues[tag] = {};
           for (const [prop, values] of Object.entries(props)) { // Assumes props is an object
             if (!target.propValues[tag][prop]) target.propValues[tag][prop] = [];
@@ -297,7 +298,7 @@ for (const file of htmlFiles) {
   const htmlResult = extractHtmlUsage(content, DS_PREFIXES, discoveredAngularSelectors);
   for (const prefix of DS_PREFIXES) {
     const target = usageMap[prefix];
-    mergeHtmlUsage(htmlResult, target, prefix); // Reverted: Removed filePath
+    mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix); // Reverted: Removed filePath
   }
 }
 
@@ -323,14 +324,14 @@ for (const file of cssFiles) {
 }
 
 // 🔗 Utilitário de Merge
-function mergeHtmlUsage(htmlResult, target, prefix) { // Reverted: Removed filePath parameter
+function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix) { // Reverted: Removed filePath parameter
   for (const [tag, count] of Object.entries(htmlResult.components)) {
     if (!tag.toLowerCase().startsWith(prefix)) continue; // prefix is 'nb'
     // Removed nb-icon logging
     target.components[tag] = (target.components[tag] || 0) + count;
   }
   for (const [tag, props] of Object.entries(htmlResult.propValues)) {
-    if (!tag.toLowerCase().startsWith(prefix)) continue;
+    if (!(firstDsPrefix && prefix === firstDsPrefix && tag.toLowerCase().startsWith(firstDsPrefix))) continue;
     if (!target.propValues[tag]) target.propValues[tag] = {};
     for (const [prop, values] of Object.entries(props)) {
       if (!target.propValues[tag][prop]) target.propValues[tag][prop] = [];
@@ -377,89 +378,94 @@ function mergeHtmlUsage(htmlResult, target, prefix) { // Reverted: Removed fileP
  * Calculates the usage score based on component categories.
  * @param {object} usageMap The main map containing all usage statistics.
  * @param {string[]} dsPrefixes Array of Design System prefixes (e.g., ['nb']).
- * @returns {object} An object containing the score, e.g., {"score": {"nb": "60%", "internal": "20%", "external": "20%"}}
+ * @returns {object} An object containing the score, e.g., {"score": {"nb": "60%", "mat": "10%", "internal": "20%", "external": "10%"}}
  */
 function calculateUsageScore(usageMap, dsPrefixes) {
-  let nb_count = 0;
+  const dsCounts = {};
   let internal_count = 0;
   let external_count = 0;
+  const scores = {};
 
-  // Calculate nb_count (Design System components)
+  // Calculate component counts for each DS prefix
   for (const prefix of dsPrefixes) {
-    if (usageMap[prefix] && usageMap[prefix].components) {
-      nb_count += Object.values(usageMap[prefix].components).reduce((sum, count) => sum + count, 0);
-    }
+    dsCounts[prefix] = Object.values(usageMap[prefix]?.components || {}).reduce((sum, count) => sum + count, 0);
   }
 
   // Calculate internal_count and external_count
-  // These are taken from the first DS prefix entry, as they represent global app counts
-  // and are duplicated under each DS prefix key by the current merge logic.
-  if (dsPrefixes.length > 0) {
-    const firstPrefix = dsPrefixes[0];
-    if (usageMap[firstPrefix]) {
-      if (usageMap[firstPrefix].internalComponents) {
-        internal_count = Object.values(usageMap[firstPrefix].internalComponents).reduce((sum, count) => sum + count, 0);
-      }
-      if (usageMap[firstPrefix].outsideComponents) {
-        external_count = Object.values(usageMap[firstPrefix].outsideComponents).reduce((sum, count) => sum + count, 0);
-      }
+  // These are taken from the first DS prefix entry, as they represent global app counts.
+  const firstPrefixForCounts = dsPrefixes.length > 0 ? dsPrefixes[0] : null;
+  if (firstPrefixForCounts && usageMap[firstPrefixForCounts]) {
+    internal_count = Object.values(usageMap[firstPrefixForCounts].internalComponents || {}).reduce((sum, count) => sum + count, 0);
+    external_count = Object.values(usageMap[firstPrefixForCounts].outsideComponents || {}).reduce((sum, count) => sum + count, 0);
+  }
+
+  const total_ds_components_count = Object.values(dsCounts).reduce((sum, count) => sum + count, 0);
+  const grand_total_count = total_ds_components_count + internal_count + external_count;
+
+  if (grand_total_count === 0) {
+    for (const prefix of dsPrefixes) {
+      scores[prefix] = "0%";
+    }
+    scores.internal = "0%";
+    scores.external = "0%";
+    return { score: scores };
+  }
+
+  // Calculate percentages as floating point numbers first
+  const floatPercentages = {};
+  for (const prefix of dsPrefixes) {
+    floatPercentages[prefix] = (dsCounts[prefix] / grand_total_count) * 100;
+  }
+  floatPercentages.internal = (internal_count / grand_total_count) * 100;
+  floatPercentages.external = (external_count / grand_total_count) * 100;
+
+  // Round all percentages and calculate sum of rounded
+  let sumOfRoundedPercentages = 0;
+  const roundedPercentages = {};
+
+  // Keep track of keys to adjust the last one if needed
+  const percentageKeys = [...dsPrefixes, 'internal', 'external'];
+
+  for (const key of percentageKeys) {
+    roundedPercentages[key] = Math.round(floatPercentages[key]);
+    sumOfRoundedPercentages += roundedPercentages[key];
+  }
+
+  // Adjust if sum is not 100%
+  let diff = 100 - sumOfRoundedPercentages;
+  if (diff !== 0) {
+    // Attempt to adjust the 'external' percentage first if it's not zero,
+    // or the largest DS component percentage.
+    // This is a simple heuristic. More complex logic could distribute the difference.
+    const keyToAdjust = roundedPercentages.external !== 0 && floatPercentages.external > 0 ? 'external' :
+      dsPrefixes.reduce((a, b) => floatPercentages[a] > floatPercentages[b] ? a : b, dsPrefixes[0]);
+
+    if (roundedPercentages[keyToAdjust] + diff >= 0) { // Ensure adjustment doesn't make it negative
+        roundedPercentages[keyToAdjust] += diff;
+    } else {
+        // If simple adjustment makes it negative, apply a more basic fix or log warning
+        // For now, just ensure it's not negative, accepting sum might not be 100
+        // A more robust solution would distribute the difference based on original proportions
+        console.warn(`[scan-web] Could not perfectly adjust percentages to sum to 100%. Current diff: ${diff} on key ${keyToAdjust}`);
+        // Fallback: Set the adjusted value to 0 if it would go negative, and accept the sum might be off
+        // Or, try to distribute the remaining difference to other positive values (more complex)
+        // For simplicity here, we'll just cap at 0.
+        if (roundedPercentages[keyToAdjust] + diff < 0) {
+            diff += roundedPercentages[keyToAdjust]; // amount that made it negative
+            roundedPercentages[keyToAdjust] = 0;
+            // Try to apply remaining diff to another category if possible (e.g. largest DS prefix)
+            // This part can get intricate; for now, we accept potential small deviations if this case is hit.
+        }
     }
   }
 
-  const total_count = nb_count + internal_count + external_count;
-
-  if (total_count === 0) {
-    return {
-      score: {
-        nb: "0%",
-        internal: "0%",
-        external: "0%"
-      }
-    };
+  // Convert to string with '%'
+  for (const key of percentageKeys) {
+    scores[key] = roundedPercentages[key] + '%';
   }
 
-  // Calculate percentages
-  const nb_percentage = Math.round((nb_count / total_count) * 100) + '%';
-  const internal_percentage = Math.round((internal_count / total_count) * 100) + '%';
-  // Ensure external_percentage makes the total 100% with the other rounded percentages
-  const external_raw_percentage = (external_count / total_count) * 100;
-  let external_percentage_val = Math.round(external_raw_percentage);
-
-  // Adjust last percentage to ensure sum is 100 due to rounding
-  const current_total_percentage = parseInt(nb_percentage) + parseInt(internal_percentage) + external_percentage_val;
-  if (current_total_percentage !== 100 && total_count > 0) {
-    external_percentage_val += (100 - current_total_percentage);
-     // Sanity check: ensure it's not negative if other numbers were rounded up significantly
-    if (external_percentage_val < 0) external_percentage_val = 0;
-  }
-
-
-  const external_percentage = external_percentage_val + '%';
-
-  // Fallback if rounding adjustment leads to weird sum (e.g. if total_count is very small)
-  // This is a simple corrective, more robust would be to distribute error or use floor/ceil carefully
-  const final_nb_int = parseInt(nb_percentage);
-  const final_int_int = parseInt(internal_percentage);
-  let final_ext_int = parseInt(external_percentage);
-
-  if (final_nb_int + final_int_int + final_ext_int !== 100 && total_count > 0) {
-    // If sum is not 100, adjust the largest contributor or external by default
-     final_ext_int = 100 - final_nb_int - final_int_int;
-     if (final_ext_int < 0) { // if external becomes negative, set to 0 and adjust another
-        final_ext_int = 0;
-        // This case can get complex, for now, simple adjustment is fine.
-        // A more robust solution might involve distributing the rounding error.
-     }
-  }
-
-
-  return {
-    score: {
-      nb: final_nb_int + '%',
-      internal: final_int_int + '%',
-      external: final_ext_int + '%'
-    }
-  };
+  console.log('[DEBUG] Calculated scores object:', JSON.stringify(scores, null, 2));
+  return { score: scores };
 }
 
 // Calculate score before saving
@@ -482,5 +488,6 @@ const reportsDir = nodePath.dirname(OUTPUT_PATH);
 if (!fs.existsSync(reportsDir)) {
   fs.mkdirSync(reportsDir, { recursive: true });
 }
+console.log('[DEBUG] Final usageMap before saving:', JSON.stringify(usageMap, null, 2));
 fs.writeFileSync(OUTPUT_PATH, JSON.stringify(usageMap, null, 2));
 console.log(`✅ Web usage report saved to ${OUTPUT_PATH}`);

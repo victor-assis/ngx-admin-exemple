@@ -38,8 +38,7 @@ No data available.
   let listItems = Object.entries(obj)
     .sort((a, b) => b[1] - a[1])
     .map(([key, val]) => `- \`${key}\`: **${val}**`)
-    .join('
-'); // Use
+    .join('\n'); // Use
  here
   return `<details><summary><h3>${title} (click to expand)</h3></summary>
 
@@ -60,16 +59,13 @@ No data available.
 `;
   let mdContent = '';
   for (const [component, props] of Object.entries(data)) {
-    mdContent += `**${component}**
-`; // Use
+    mdContent += `**${component}**\n`; // Use
  here
     for (const [prop, values] of Object.entries(props)) {
-      mdContent += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}
-`; // Use
+      mdContent += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}\n`; // Use
  here
     }
-    mdContent += '
-'; // Use
+    mdContent += '\n'; // Use
  here
   }
   return `<details><summary><h3>🧬 Props usadas por componente (click to expand)</h3></summary>
