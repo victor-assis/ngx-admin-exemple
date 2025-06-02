@@ -18,7 +18,7 @@ if (!fs.existsSync(INPUT_PATH)) {
 const usageMap = JSON.parse(fs.readFileSync(INPUT_PATH, 'utf8'));
 
 // Separate DS prefixes from other top-level keys
-const dsPrefixKeys = Object.keys(usageMap).filter(key =>
+const dsPrefixKeys = Object.keys(usageMap).filter(key => 
     !['framework', 'score', 'outsideComponents', 'internalComponents', 'propValues'].includes(key)
 );
 
@@ -89,7 +89,7 @@ for (const prefix of dsPrefixKeys) {
   mdSystemSection += formatList('CSS Custom Property Usage', data.customProperties);
   mdSystemSection += formatList('SCSS Variable Usage', data.scssVariables);
   // REMOVE propValues from per-DS section:
-  // mdSystemSection += renderPropsMarkdown(data.propValues);
+  // mdSystemSection += renderPropsMarkdown(data.propValues); 
   mdReport += mdSystemSection + "\n---\n\n";
 }
 

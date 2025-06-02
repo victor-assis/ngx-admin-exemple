@@ -32,9 +32,17 @@ export function extractHtmlUsage(html, dsPrefixes = [], discoveredAngularSelecto
   const doc = parseDocument(html);
   const elements = selectAll('*', doc);
 
+  const ANGULAR_SPECIFIC_TAGS_TO_IGNORE = ['ng-template', 'ng-container'];
+
   for (const el of elements) {
     if (!el.name || !el.attribs) continue;
     const tag = el.name;
+
+    // Add this check:
+    if (ANGULAR_SPECIFIC_TAGS_TO_IGNORE.includes(tag.toLowerCase())) {
+      continue; // Skip this element entirely if it's in the ignore list
+    }
+
     // console.log(`[DEBUG HTML Internal] Checking tag: ${tag}`);
     const isCustomElement = tag.includes('-'); // e.g. my-component, nb-button
     const isDSComponent = tagPrefixes.some(prefix => tag.startsWith(prefix));
