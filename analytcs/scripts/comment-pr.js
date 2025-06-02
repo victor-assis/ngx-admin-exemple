@@ -80,21 +80,21 @@ ${mdContent}</details>
 // ✅ Gera mensagem de comentário
 let message = `## 📊 Design System Usage Report
 `;
-if (score && typeof score === 'object' && score.nb) {
-  const nbScoreForBadge = parseInt(score.nb) || 0; // Extract number for badge
+// const score = reportData.score; // Already defined on line 25
+if (score && typeof score === 'object' && Object.keys(score).length > 0) {
+  const nbScoreForBadge = parseInt(score.nb) || 0; // Keep nb for badge, or decide on another strategy
   message += `![Usage Badge](https://img.shields.io/badge/design--system--usage-${nbScoreForBadge}%25-blue?style=flat-square)
-`;
+`; // Note: Badge still uses score.nb, this can be a future refinement if needed.
   message += `**Framework detectado:** \`${framework}\`
 `;
   message += `**Overall Adoption Score:**
 `;
-  message += `- Design System (nb): **${score.nb || 'N/A'}**
+  for (const [key, value] of Object.entries(score)) {
+    message += `- ${key.charAt(0).toUpperCase() + key.slice(1)}: **${value || 'N/A'}**
 `;
-  message += `- Internal Components: **${score.internal || 'N/A'}**
-`;
-  message += `- External Components: **${score.external || 'N/A'}**
-
-`;
+  }
+  message += `
+`; // Add a newline for spacing
 } else {
   message += `**Framework detectado:** \`${framework}\`
 `;
@@ -122,16 +122,30 @@ for (const [prefix, data] of Object.entries(systems)) {
     message += formatList('🧪 CSS Custom Properties', data.customProperties);
     message += formatList('💠 SCSS Tokens', data.scssVariables);
     message += formatList('🔷 Diretivas Angular/Vue', data.directives);
-    message += renderPropsMarkdown(data.propValues);
-    message += formatList('🚫 Componentes fora do Design System', data.outsideComponents);
-    // Replaced renderInternalsMarkdown with formatList for internalComponents
-    message += formatList('🧩 Componentes Internos da Aplicação', data.internalComponents);
+    // REMOVE these lines from inside the loop:
+    // message += renderPropsMarkdown(data.propValues);
+    // message += formatList('🚫 Componentes fora do Design System', data.outsideComponents);
+    // message += formatList('🧩 Componentes Internos da Aplicação', data.internalComponents);
   } else {
     message += `❌ Nenhum uso detectado para este DS.`;
   }
 
   message += '\n';
 }
+
+// (End of loop for const [prefix, data] of Object.entries(systems))
+
+message += `---
+
+`;
+message += `## Global Collections
+
+`; // New overarching section
+
+// Use reportData for these top-level items
+message += renderPropsMarkdown(reportData.propValues); // propValues is top-level in final-report.json
+message += formatList('🧩 Internal Application Components', reportData.internalComponents);
+message += formatList('🚫 Unrecognized Custom Components (Outside Components)', reportData.outsideComponents);
 
 // ✅ Publica comentário na PR
 await octokit.issues.createComment({

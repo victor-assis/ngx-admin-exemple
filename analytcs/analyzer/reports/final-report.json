@@ -1,0 +1,28 @@
+{
+  "framework": "unknown",
+  "score": {
+    "nb": "0%",
+    "mat": "0%",
+    "internal": "0%",
+    "external": "0%"
+  },
+  "outsideComponents": {},
+  "internalComponents": {},
+  "propValues": {},
+  "systems": {
+    "nb": {
+      "components": {},
+      "classes": {},
+      "customProperties": {},
+      "scssVariables": {},
+      "directives": {}
+    },
+    "mat": {
+      "components": {},
+      "classes": {},
+      "customProperties": {},
+      "scssVariables": {},
+      "directives": {}
+    }
+  }
+}

@@ -16,23 +16,37 @@ if (!fs.existsSync(INPUT_PATH)) {
 }
 
 const usageMap = JSON.parse(fs.readFileSync(INPUT_PATH, 'utf8'));
-const { framework, ...systems } = usageMap;
 
-// const count = obj => Object.values(obj || {}).reduce((acc, val) => acc + val, 0); // count function no longer needed here for score
+// Separate DS prefixes from other top-level keys
+const dsPrefixKeys = Object.keys(usageMap).filter(key =>
+    !['framework', 'score', 'outsideComponents', 'internalComponents', 'propValues'].includes(key)
+);
 
-// Initialize finalReport for JSON output - simplified score handling
-const finalReport = { framework, score: usageMap.score || {}, systems: {} };
+const finalReport = {
+  framework: usageMap.framework,
+  score: usageMap.score || {},
+  outsideComponents: usageMap.outsideComponents || {},
+  internalComponents: usageMap.internalComponents || {},
+  propValues: usageMap.propValues || {}, // For JSON report, include all propValues globally
+  systems: {}
+};
+
+for (const prefixKey of dsPrefixKeys) {
+  if (usageMap[prefixKey] && typeof usageMap[prefixKey] === 'object') { // Basic check for a DS object
+       finalReport.systems[prefixKey] = usageMap[prefixKey];
+  }
+}
 
 // Start building the Markdown report string
 let mdReport = "# Web Usage Analysis Report\n\n";
 
 mdReport += "## Overall Summary\n";
-mdReport += `- **Framework Detected**: ${framework}\n`;
-if (usageMap.score) {
+mdReport += `- **Framework Detected**: ${usageMap.framework}\n`; // Use usageMap.framework
+if (usageMap.score && Object.keys(usageMap.score).length > 0) {
   mdReport += `- **Adoption Score**:\n`;
-  mdReport += `    - **nb**: ${usageMap.score.nb}\n`;
-  mdReport += `    - **Internal**: ${usageMap.score.internal}\n`;
-  mdReport += `    - **External**: ${usageMap.score.external}\n`;
+  for (const [key, value] of Object.entries(usageMap.score)) {
+    mdReport += `    - **${key.charAt(0).toUpperCase() + key.slice(1)}**: ${value}\n`;
+  }
 }
 mdReport += "\n---\n\n";
 
@@ -61,34 +75,35 @@ const renderPropsMarkdown = data => {
 };
 
 // Process each Design System
-for (const [prefix, data] of Object.entries(systems)) {
-  // For JSON report, store data without the old per-system score
-  finalReport.systems[prefix] = { ...data };
+for (const prefix of dsPrefixKeys) {
+  const data = usageMap[prefix]; // data is now usageMap[prefix]
+  if (!data) continue; // Should not happen if dsPrefixKeys is derived from usageMap correctly
+
+  // JSON report part for systems is already handled by the new finalReport structure
 
   let mdSystemSection = `## Design System: \`${prefix}\`\n\n`;
-  // Old per-system score display removed
 
   mdSystemSection += formatList('Component Usage (`<tag>`)', data.components);
   mdSystemSection += formatList('Directive Usage', data.directives);
   mdSystemSection += formatList('Class Usage', data.classes);
   mdSystemSection += formatList('CSS Custom Property Usage', data.customProperties);
   mdSystemSection += formatList('SCSS Variable Usage', data.scssVariables);
-  mdSystemSection += renderPropsMarkdown(data.propValues);
-
+  // REMOVE propValues from per-DS section:
+  // mdSystemSection += renderPropsMarkdown(data.propValues);
   mdReport += mdSystemSection + "\n---\n\n";
 }
 
+// Add Global propValues Section to Markdown
+mdReport += "\n---\n\n"; // Separator
+mdReport += "## Global Property Values (from first DS prefix components)\n\n";
+mdReport += renderPropsMarkdown(usageMap.propValues); // Call with top-level propValues
+mdReport += "\n---\n\n";
+
 // Add Global Application-Specific Components Section to Markdown
 mdReport += "## Application-Specific Components\n\n";
-const firstSystemPrefix = Object.keys(systems)[0]; // Get the first prefix
-if (firstSystemPrefix && systems[firstSystemPrefix]) {
-  const globalData = systems[firstSystemPrefix];
-  // Note: internalComponents and outsideComponents are now directly under each system prefix in usageMap.
-  // The report will show them for the *first* system encountered. This matches the old behavior implicitly.
-  // If these should be truly global and unique, web-usage.json structure would need adjustment.
-  mdReport += formatList('Internal Application Components', globalData.internalComponents);
-  mdReport += formatList('Unrecognized Custom Components (Outside Components)', globalData.outsideComponents);
-}
+// No need for firstSystemPrefix or globalData here for these
+mdReport += formatList('Internal Application Components', usageMap.internalComponents);
+mdReport += formatList('Unrecognized Custom Components (Outside Components)', usageMap.outsideComponents);
 mdReport += "\n---\n\n";
 
 // Save the reports
