@@ -20,7 +20,10 @@ const discoveredAngularSelectors = new Set();
 const discoveredJsxInternalNames = new Set();
 
 const usageMap = {
-  framework: 'unknown'
+  framework: 'unknown',
+  outsideComponents: {},
+  internalComponents: {},
+  propValues: {} // propValues will also be a top-level key as per desired output
 };
 
 for (const prefix of DS_PREFIXES) {
@@ -29,10 +32,10 @@ for (const prefix of DS_PREFIXES) {
     classes: {},
     customProperties: {},
     scssVariables: {},
-    outsideComponents: {},
-    directives: {},
-    propValues: {},
-    internalComponents: {}
+    directives: {}
+    // propValues is now top-level, associated with firstDsPrefix components
+    // outsideComponents is now top-level
+    // internalComponents is now top-level
   };
 }
 
@@ -224,7 +227,7 @@ for (const file of jsFiles) {
     const target = usageMap[prefix];
 
     if (angularUsage) {
-      mergeHtmlUsage(angularUsage, target, prefix, firstDsPrefix); // Reverted: Removed filePath
+      mergeHtmlUsage(angularUsage, target, prefix, firstDsPrefix, usageMap); // Reverted: Removed filePath
     }
 
     if (jsxUsage && jsxUsage.components && typeof jsxUsage.components === 'object') {
@@ -238,12 +241,12 @@ for (const file of jsFiles) {
     if (jsxUsage && jsxUsage.propValues && typeof jsxUsage.propValues === 'object') {
       for (const [tag, props] of Object.entries(jsxUsage.propValues)) {
         if (firstDsPrefix && prefix === firstDsPrefix && tag.toLowerCase().startsWith(firstDsPrefix)) {
-          if (!target.propValues[tag]) target.propValues[tag] = {};
+          if (!usageMap.propValues[tag]) usageMap.propValues[tag] = {};
           for (const [prop, values] of Object.entries(props)) { // Assumes props is an object
-            if (!target.propValues[tag][prop]) target.propValues[tag][prop] = [];
+            if (!usageMap.propValues[tag][prop]) usageMap.propValues[tag][prop] = [];
             for (const value of values) { // Assumes values is an array
-              if (!target.propValues[tag][prop].includes(value)) {
-                target.propValues[tag][prop].push(value);
+              if (!usageMap.propValues[tag][prop].includes(value)) {
+                usageMap.propValues[tag][prop].push(value);
               }
             }
           }
@@ -257,15 +260,17 @@ for (const file of jsFiles) {
         }
       }
     }
-    if (jsxUsage && jsxUsage.internalComponents && typeof jsxUsage.internalComponents === 'object') {
-      for (const [tag, count] of Object.entries(jsxUsage.internalComponents)) {
-        target.internalComponents[tag] = (target.internalComponents[tag] || 0) + count;
-      }
-    }
-    if (jsxUsage && jsxUsage.outsideComponents && typeof jsxUsage.outsideComponents === 'object') {
-      for (const [tag, count] of Object.entries(jsxUsage.outsideComponents)) {
-        target.outsideComponents[tag] = (target.outsideComponents[tag] || 0) + count;
-      }
+    if (prefix === firstDsPrefix) { // Process these only once per file effectively
+        if (jsxUsage && jsxUsage.internalComponents && typeof jsxUsage.internalComponents === 'object') {
+            for (const [tag, count] of Object.entries(jsxUsage.internalComponents)) {
+                usageMap.internalComponents[tag] = (usageMap.internalComponents[tag] || 0) + count;
+            }
+        }
+        if (jsxUsage && jsxUsage.outsideComponents && typeof jsxUsage.outsideComponents === 'object') {
+            for (const [tag, count] of Object.entries(jsxUsage.outsideComponents)) {
+                usageMap.outsideComponents[tag] = (usageMap.outsideComponents[tag] || 0) + count;
+            }
+        }
     }
 
     // Merge CSS class usage from JSX/TSX
@@ -298,7 +303,7 @@ for (const file of htmlFiles) {
   const htmlResult = extractHtmlUsage(content, DS_PREFIXES, discoveredAngularSelectors);
   for (const prefix of DS_PREFIXES) {
     const target = usageMap[prefix];
-    mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix); // Reverted: Removed filePath
+    mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix, usageMap); // Reverted: Removed filePath
   }
 }
 
@@ -324,7 +329,7 @@ for (const file of cssFiles) {
 }
 
 // 🔗 Utilitário de Merge
-function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix) { // Reverted: Removed filePath parameter
+function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix, globalUsageMap) { // Reverted: Removed filePath parameter
   for (const [tag, count] of Object.entries(htmlResult.components)) {
     if (!tag.toLowerCase().startsWith(prefix)) continue; // prefix is 'nb'
     // Removed nb-icon logging
@@ -332,12 +337,12 @@ function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix) { // Reverted
   }
   for (const [tag, props] of Object.entries(htmlResult.propValues)) {
     if (!(firstDsPrefix && prefix === firstDsPrefix && tag.toLowerCase().startsWith(firstDsPrefix))) continue;
-    if (!target.propValues[tag]) target.propValues[tag] = {};
+    if (!globalUsageMap.propValues[tag]) globalUsageMap.propValues[tag] = {};
     for (const [prop, values] of Object.entries(props)) {
-      if (!target.propValues[tag][prop]) target.propValues[tag][prop] = [];
+      if (!globalUsageMap.propValues[tag][prop]) globalUsageMap.propValues[tag][prop] = [];
       for (const value of values) {
-        if (!target.propValues[tag][prop].includes(value)) {
-          target.propValues[tag][prop].push(value);
+        if (!globalUsageMap.propValues[tag][prop].includes(value)) {
+          globalUsageMap.propValues[tag][prop].push(value);
         }
       }
     }
@@ -356,12 +361,12 @@ function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix) { // Reverted
     console.warn(`[scan-web] Warning: htmlResult.directives in mergeHtmlUsage was expected to be an object, but got: ${typeof htmlResult.directives}`);
   }
   for (const [tag, count] of Object.entries(htmlResult.outsideComponents)) {
-    target.outsideComponents[tag] = (target.outsideComponents[tag] || 0) + count;
+    globalUsageMap.outsideComponents[tag] = (globalUsageMap.outsideComponents[tag] || 0) + count;
   }
   // Ensure htmlResult.internalComponents exists and is an object before iterating
   if (htmlResult.internalComponents && typeof htmlResult.internalComponents === 'object') {
     for (const [tag, count] of Object.entries(htmlResult.internalComponents)) {
-      target.internalComponents[tag] = (target.internalComponents[tag] || 0) + count;
+      globalUsageMap.internalComponents[tag] = (globalUsageMap.internalComponents[tag] || 0) + count;
     }
   }
   // Merge classes usage
@@ -392,12 +397,14 @@ function calculateUsageScore(usageMap, dsPrefixes) {
   }
 
   // Calculate internal_count and external_count
-  // These are taken from the first DS prefix entry, as they represent global app counts.
-  const firstPrefixForCounts = dsPrefixes.length > 0 ? dsPrefixes[0] : null;
-  if (firstPrefixForCounts && usageMap[firstPrefixForCounts]) {
-    internal_count = Object.values(usageMap[firstPrefixForCounts].internalComponents || {}).reduce((sum, count) => sum + count, 0);
-    external_count = Object.values(usageMap[firstPrefixForCounts].outsideComponents || {}).reduce((sum, count) => sum + count, 0);
-  }
+  // These are now taken from the top-level keys in usageMap.
+  internal_count = Object.values(usageMap.internalComponents || {}).reduce((sum, count) => sum + count, 0);
+  external_count = Object.values(usageMap.outsideComponents || {}).reduce((sum, count) => sum + count, 0);
+  // const firstPrefixForCounts = dsPrefixes.length > 0 ? dsPrefixes[0] : null;
+  // if (firstPrefixForCounts && usageMap[firstPrefixForCounts]) {
+  //   internal_count = Object.values(usageMap[firstPrefixForCounts].internalComponents || {}).reduce((sum, count) => sum + count, 0);
+  //   external_count = Object.values(usageMap[firstPrefixForCounts].outsideComponents || {}).reduce((sum, count) => sum + count, 0);
+  // }
 
   const total_ds_components_count = Object.values(dsCounts).reduce((sum, count) => sum + count, 0);
   const grand_total_count = total_ds_components_count + internal_count + external_count;
@@ -464,7 +471,6 @@ function calculateUsageScore(usageMap, dsPrefixes) {
     scores[key] = roundedPercentages[key] + '%';
   }
 
-  console.log('[DEBUG] Calculated scores object:', JSON.stringify(scores, null, 2));
   return { score: scores };
 }
 

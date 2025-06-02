@@ -1,24 +1,21 @@
 {
   "framework": "unknown",
+  "outsideComponents": {},
+  "internalComponents": {},
+  "propValues": {},
   "nb": {
     "components": {},
     "classes": {},
     "customProperties": {},
     "scssVariables": {},
-    "outsideComponents": {},
-    "directives": {},
-    "propValues": {},
-    "internalComponents": {}
+    "directives": {}
   },
   "mat": {
     "components": {},
     "classes": {},
     "customProperties": {},
     "scssVariables": {},
-    "outsideComponents": {},
-    "directives": {},
-    "propValues": {},
-    "internalComponents": {}
+    "directives": {}
   },
   "score": {
     "nb": "0%",
