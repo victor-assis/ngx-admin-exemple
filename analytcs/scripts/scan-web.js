@@ -372,9 +372,10 @@ function mergeHtmlUsage(htmlResult, target, prefix, firstDsPrefix, globalUsageMa
   // Merge classes usage
   // Ensure htmlResult.classes exists and is an object before iterating
   if (htmlResult.classes && typeof htmlResult.classes === 'object') {
-    for (const [cls, count] of Object.entries(htmlResult.classes || {})) {
-      // extractHtmlUsage already filters by prefix, so we can merge directly
-      target.classes[cls] = (target.classes[cls] || 0) + count;
+    for (const [cls, count] of Object.entries(htmlResult.classes)) { // htmlResult.classes contains ALL DS classes
+      if (cls.toLowerCase().startsWith(prefix.toLowerCase() + '-')) { // Add this filter
+        target.classes[cls] = (target.classes[cls] || 0) + count;
+      }
     }
   }
 }

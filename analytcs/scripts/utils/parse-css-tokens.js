@@ -10,6 +10,7 @@
 export function extractCssTokens(content, prefix) {
  const customProperties = new Set();
  const scssVariables = new Set();
+ const classes = new Set();
 
  // Tokens CSS: var(--prefix-*)
  const varRegex = new RegExp(`var\\(\\s*(--${prefix}-[a-z0-9-_]+)\\s*\\)`, 'gi');
@@ -23,8 +24,19 @@ export function extractCssTokens(content, prefix) {
    scssVariables.add(match[0]);
  }
 
+ // Class definitions: .prefix-*
+ // Example for finding class definitions:
+ const classSelectorRegex = new RegExp(`\\.(${prefix}-[a-zA-Z0-9-_]+)`, 'g');
+ for (const match of content.matchAll(classSelectorRegex)) {
+   // match[0] would be like ".nb-button", match[1] would be "nb-button"
+   if (match[1]) { // Ensure group 1 exists
+     classes.add(match[1]);
+   }
+ }
+
  return {
    customProperties: [...customProperties],
-   scssVariables: [...scssVariables]
+   scssVariables: [...scssVariables],
+   classes: [...classes] // Add this line
  };
 }
