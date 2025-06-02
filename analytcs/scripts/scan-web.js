@@ -56,11 +56,13 @@ const jsFiles = allFiles.filter(f => f.endsWith('.ts') || f.endsWith('.js') || f
 const htmlFiles = allFiles.filter(f => f.endsWith('.html') || f.endsWith('.vue'));
 const cssFiles = allFiles.filter(f => f.endsWith('.css') || f.endsWith('.scss'));
 
+console.log('[Discovery Pass] Identifying JSX internal component definitions...');
 const capitalizedDsPrefixes = DS_PREFIXES.map(p => p.charAt(0).toUpperCase() + p.slice(1));
 for (const file of jsFiles) {
     const foundJsxNames = discoverJsxInternalComponentNames(file, capitalizedDsPrefixes);
     foundJsxNames.forEach(name => discoveredJsxInternalNames.add(name));
 }
+console.log(`[Discovery Pass] Discovered JSX Internal Names: ${JSON.stringify(Array.from(discoveredJsxInternalNames))}`);
 
 /**
  * Discovers Angular component selectors from a TypeScript file and adds them to the provided set.
@@ -113,11 +115,13 @@ function discoverAngularSelectorsInTsFile(filePath, dsPrefixes, selectorsSet) {
 }
 
 // New loop for Angular Selector Discovery
+console.log('[Discovery Pass] Identifying Angular component selectors...');
 const tsFilesForSelectorDiscovery = allFiles.filter(f => f.endsWith('.ts') && !f.endsWith('.tsx'));
 
 for (const file of tsFilesForSelectorDiscovery) {
   discoverAngularSelectorsInTsFile(file, DS_PREFIXES, discoveredAngularSelectors);
 }
+console.log(`[Discovery Pass] Discovered Angular Selectors: ${JSON.stringify(Array.from(discoveredAngularSelectors))}`);
 
 /**
  * Extracts Angular component template usage from a TypeScript file.
@@ -285,7 +289,8 @@ for (const file of jsFiles) {
 for (const file of htmlFiles) {
   const absoluteFilePath = nodePath.resolve(file); // Ensure absolute path for comparison
   if (processedTemplateUrls.has(absoluteFilePath)) {
-    continue;
+    // console.log(`[DEBUG] Skipping already processed Angular template: ${file}`); // Optional debug log
+    continue; // Skip this file
   }
   const content = fs.readFileSync(file, 'utf8');
   // Pass discoveredAngularSelectors (global set). appPrefixes was removed from extractHtmlUsage.

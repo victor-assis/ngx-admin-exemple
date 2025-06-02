@@ -18,6 +18,7 @@ export function extractHtmlUsage(html, dsPrefixes = [], discoveredAngularSelecto
   // Prepare lowercase prefixes for directive matching, similar to JSX parser
   const htmlDirectivePrefixes = dsPrefixes.map(p => p.toLowerCase());
   // appPrefixes parameter and related logic (like appTagPrefixes) have been removed.
+  // The console.log for appPrefixes has also been removed.
 
   const result = {
     components: {},
@@ -34,8 +35,10 @@ export function extractHtmlUsage(html, dsPrefixes = [], discoveredAngularSelecto
   for (const el of elements) {
     if (!el.name || !el.attribs) continue;
     const tag = el.name;
-    const isCustomElement = tag.includes('-');
+    // console.log(`[DEBUG HTML Internal] Checking tag: ${tag}`);
+    const isCustomElement = tag.includes('-'); // e.g. my-component, nb-button
     const isDSComponent = tagPrefixes.some(prefix => tag.startsWith(prefix));
+    // isAppComponent logic removed as appPrefixes is no longer used.
 
     if (isDSComponent) {
       result.components[tag] = (result.components[tag] || 0) + 1;

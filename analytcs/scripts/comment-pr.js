@@ -20,61 +20,99 @@ if (!fs.existsSync(path)) {
   process.exit(1);
 }
 
-const { framework, score, systems } = JSON.parse(fs.readFileSync(path, 'utf-8'));
+const reportData = JSON.parse(fs.readFileSync(path, 'utf-8'));
+const framework = reportData.framework || 'N/A';
+const score = reportData.score; // Keep as is, will check before use
+const systems = reportData.systems || {};
 
 const count = obj => Object.values(obj || {}).reduce((acc, val) => acc + val, 0);
+
 const formatList = (title, obj) => {
-  if (!obj || Object.keys(obj).length === 0) return '';
-  return `### ${title}\n` +
-    Object.entries(obj)
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, val]) => `- \`${key}\`: **${val}**`)
-      .join('\n') + '\n\n';
+  if (!obj || Object.keys(obj).length === 0) return `<details><summary><h3>${title}</h3></summary>
+
+No data available.
+
+</details>
+
+`;
+  let listItems = Object.entries(obj)
+    .sort((a, b) => b[1] - a[1])
+    .map(([key, val]) => `- \`${key}\`: **${val}**`)
+    .join('
+'); // Use
+ here
+  return `<details><summary><h3>${title} (click to expand)</h3></summary>
+
+${listItems}
+
+</details>
+
+`;
 };
 
 const renderPropsMarkdown = data => {
-  if (!data || Object.keys(data).length === 0) return '';
-  let md = `### 🧬 Props usadas por componente\n\n`;
+  if (!data || Object.keys(data).length === 0) return `<details><summary><h3>🧬 Props usadas por componente</h3></summary>
+
+No data available.
+
+</details>
+
+`;
+  let mdContent = '';
   for (const [component, props] of Object.entries(data)) {
-    md += `**${component}**\n`;
+    mdContent += `**${component}**
+`; // Use
+ here
     for (const [prop, values] of Object.entries(props)) {
-      md += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}\n`;
+      mdContent += `- \`${prop}\`: ${values.map(v => `\`${v}\``).join(', ')}
+`; // Use
+ here
     }
-    md += '\n';
+    mdContent += '
+'; // Use
+ here
   }
-  return md;
+  return `<details><summary><h3>🧬 Props usadas por componente (click to expand)</h3></summary>
+
+${mdContent}</details>
+
+`;
 };
 
-const renderInternalsMarkdown = data => {
-  if (!data || Object.keys(data).length === 0) return '';
-  let md = `### 🧩 Componentes internos da aplicação\n\n`;
-  for (const [comp, info] of Object.entries(data)) {
-    md += `**\`${comp}\`** — usado **${info.count}x**\n`;
-    const used = info.dsComponentsUsed;
-    if (Object.keys(used).length === 0) {
-      md += `- *(sem uso de componentes do design system)*\n\n`;
-    } else {
-      for (const [dsComp, count] of Object.entries(used)) {
-        md += `- \`${dsComp}\`: **${count}** uso(s)\n`;
-      }
-      md += '\n';
-    }
-  }
-  return md;
-};
+// renderInternalsMarkdown function removed.
 
 // ✅ Gera mensagem de comentário
-let message = `## 📊 Design System Usage Report\n`;
-message += `![Usage Badge](https://img.shields.io/badge/design--system--usage-${score}%25-blue?style=flat-square)\n`;
-message += `**Framework detectado:** \`${framework}\`\n`;
-message += `**Média de adoção geral:** **${score}%**\n\n`;
+let message = `## 📊 Design System Usage Report
+`;
+if (score && typeof score === 'object' && score.nb) {
+  const nbScoreForBadge = parseInt(score.nb) || 0; // Extract number for badge
+  message += `![Usage Badge](https://img.shields.io/badge/design--system--usage-${nbScoreForBadge}%25-blue?style=flat-square)
+`;
+  message += `**Framework detectado:** \`${framework}\`
+`;
+  message += `**Overall Adoption Score:**
+`;
+  message += `- Design System (nb): **${score.nb || 'N/A'}**
+`;
+  message += `- Internal Components: **${score.internal || 'N/A'}**
+`;
+  message += `- External Components: **${score.external || 'N/A'}**
+
+`;
+} else {
+  message += `**Framework detectado:** \`${framework}\`
+`;
+  message += `**Overall Adoption Score:** Data N/A
+
+`;
+}
 
 for (const [prefix, data] of Object.entries(systems)) {
-  message += `---\n\n`;
+  message += `---\n\n`; // Using \n for markdown structure, PR comment API handles this.
   message += `## 🔹 Design System: \`${prefix}\`\n`;
-  message += `**Adoção estimada:** ${data.score}%\n\n`;
+  // Removed **Adoção estimada:** ${data.score}% line
 
-  const total =
+  const total = // This total is for the "Total de usos detectados" line, can be kept.
     count(data.components) +
     count(data.classes) +
     count(data.customProperties) +
@@ -90,7 +128,8 @@ for (const [prefix, data] of Object.entries(systems)) {
     message += formatList('🔷 Diretivas Angular/Vue', data.directives);
     message += renderPropsMarkdown(data.propValues);
     message += formatList('🚫 Componentes fora do Design System', data.outsideComponents);
-    message += renderInternalsMarkdown(data.internalComponents);
+    // Replaced renderInternalsMarkdown with formatList for internalComponents
+    message += formatList('🧩 Componentes Internos da Aplicação', data.internalComponents);
   } else {
     message += `❌ Nenhum uso detectado para este DS.`;
   }
