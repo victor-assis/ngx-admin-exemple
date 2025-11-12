@@ -1,0 +1,938 @@
+{
+  "framework": "angular",
+  "nb": {
+    "components": {
+      "nb-menu": 1,
+      "nb-icon": 79,
+      "nb-select": 81,
+      "nb-option": 303,
+      "nb-actions": 8,
+      "nb-action": 36,
+      "nb-search": 16,
+      "nb-user": 10,
+      "nb-layout": 3,
+      "nb-layout-header": 3,
+      "nb-sidebar": 3,
+      "nb-layout-column": 6,
+      "nb-layout-footer": 3,
+      "nb-card": 296,
+      "nb-card-header": 241,
+      "nb-card-body": 261,
+      "nb-tabset": 15,
+      "nb-tab": 30,
+      "nb-flip-card": 4,
+      "nb-card-front": 6,
+      "nb-card-back": 6,
+      "nb-progress-bar": 28,
+      "nb-reveal-card": 2,
+      "nb-list": 18,
+      "nb-list-item": 22,
+      "nb-alert": 42,
+      "nb-calendar": 4,
+      "nb-calendar-range": 2,
+      "nb-calendar-month-picker": 2,
+      "nb-chat": 2,
+      "nb-chat-message": 2,
+      "nb-chat-form": 2,
+      "nb-card-footer": 20,
+      "nb-radio-group": 10,
+      "nb-radio": 30,
+      "nb-accordion": 4,
+      "nb-accordion-item": 12,
+      "nb-accordion-item-header": 12,
+      "nb-accordion-item-body": 12,
+      "nb-stepper": 6,
+      "nb-step": 24,
+      "nb-datepicker": 4,
+      "nb-rangepicker": 2,
+      "nb-checkbox": 24,
+      "nb-calendar-day-picker": 2,
+      "nb-select-label": 2,
+      "nb-option-group": 12,
+      "nb-route-tabset": 1
+    },
+    "classes": {
+      "nb-square": 2,
+      "nb-snowy-circled": 4,
+      "nb-sunny-circled": 4,
+      "nb-flame-circled": 4,
+      "nb-loop-circled": 4
+    },
+    "customProperties": {
+      "--nb-color-basic-100": 1
+    },
+    "scssVariables": {
+      "$nb-color-basic-100": 1,
+      "$nb-themes": 1
+    },
+    "outsideComponents": {
+      "router-outlet": 12,
+      "ngx-one-column-layout": 1,
+      "ngx-profit-card": 2,
+      "ngx-earning-card": 2,
+      "ngx-traffic-reveal-card": 2,
+      "ngx-ecommerce-charts": 2,
+      "ngx-country-orders": 2,
+      "ngx-progress-section": 2,
+      "ngx-ecommerce-visitors-analytics": 2,
+      "ngx-user-activity": 2,
+      "ngx-status-card": 2,
+      "ngx-temperature": 2,
+      "ngx-electricity": 2,
+      "ngx-rooms": 2,
+      "ngx-contacts": 2,
+      "ngx-solar": 2,
+      "ngx-kitten": 2,
+      "ngx-traffic": 2,
+      "ngx-weather": 2,
+      "ngx-security-cameras": 2,
+      "ngx-header": 3,
+      "ng-content": 11,
+      "ngx-footer": 3,
+      "ngx-chartjs-pie": 2,
+      "ngx-chartjs-bar": 2,
+      "ngx-chartjs-line": 2,
+      "ngx-chartjs-multiple-xaxis": 2,
+      "ngx-chartjs-bar-horizontal": 2,
+      "ngx-chartjs-radar": 2,
+      "ngx-charts-advanced-pie-chart": 1,
+      "ngx-charts-area-chart": 1,
+      "ngx-charts-bar-vertical": 1,
+      "ngx-charts-line-chart": 1,
+      "ngx-charts-pie-chart": 1,
+      "ngx-charts-polar-chart": 1,
+      "ngx-d3-pie": 2,
+      "ngx-d3-bar": 2,
+      "ngx-d3-line": 2,
+      "ngx-d3-advanced-pie": 2,
+      "ngx-d3-area-stack": 2,
+      "ngx-echarts-pie": 2,
+      "ngx-echarts-bar": 2,
+      "ngx-echarts-line": 2,
+      "ngx-echarts-multiple-xaxis": 2,
+      "ngx-echarts-area-stack": 2,
+      "ngx-echarts-bar-animation": 2,
+      "ngx-echarts-radar": 2,
+      "ngx-chart-panel-summary": 4,
+      "ngx-chart-panel-header": 4,
+      "ngx-orders-chart": 2,
+      "ngx-profit-chart": 2,
+      "ngx-country-orders-map": 1,
+      "ngx-country-orders-chart": 1,
+      "ngx-earning-card-front": 2,
+      "ngx-earning-card-back": 2,
+      "ngx-stats-card-front": 2,
+      "ngx-stats-card-back": 2,
+      "ngx-traffic-cards-header": 4,
+      "ngx-traffic-front-card": 2,
+      "ngx-traffic-back-card": 2,
+      "ngx-legend-chart": 6,
+      "ngx-visitors-analytics-chart": 2,
+      "ngx-slide-out": 2,
+      "ngx-visitors-statistics": 2,
+      "ngx-nebular-select": 2,
+      "ngx-interactive-progress-bar": 2,
+      "ngx-spinner-sizes": 2,
+      "ngx-spinner-color": 2,
+      "ngx-spinner-in-buttons": 2,
+      "ngx-spinner-in-tabs": 2,
+      "ngx-electricity-chart": 2,
+      "ngx-room-selector": 1,
+      "ngx-player": 1,
+      "ngx-temperature-dragger": 4,
+      "ngx-traffic-chart": 1,
+      "ngx-tiny-mce": 1,
+      "ngx-news-post": 4,
+      "ngx-news-post-placeholder": 4,
+      "ng-template": 18,
+      "google-map": 4,
+      "map-marker": 4,
+      "ngx-search": 2,
+      "ngx-map": 2,
+      "ng2-smart-table": 2,
+      "ng-container": 4,
+      "ngx-fs-icon": 2,
+      "ngx-earning-pie-chart": 2,
+      "ngx-earning-live-update-chart": 2,
+      "ngx-stats-ares-chart": 2,
+      "ngx-stats-bar-animation-chart": 2,
+      "ngx-traffic-bar-chart": 2,
+      "ngx-traffic-bar": 2,
+      "ngx-app": 1
+    },
+    "directives": {
+      "nbisgranted": 2,
+      "nbcontextmenu": 2,
+      "nbbutton": 34,
+      "nbinfinitelist": 2,
+      "nbsteppernext": 2,
+      "nbstepperprevious": 2,
+      "nbinput": 13,
+      "nbdatepicker": 2,
+      "nbpopover": 2,
+      "nbpopovertrigger": 2,
+      "nbpopoverplacement": 2,
+      "nbtooltip": 2,
+      "nbtooltipicon": 2,
+      "nbtooltipstatus": 2,
+      "nbtooltipplacement": 2,
+      "nbfilterinput": 2,
+      "nbtreegrid": 2,
+      "nbsort": 2,
+      "nbtreegridheaderrow": 2,
+      "nbtreegridheaderrowdef": 2,
+      "nbtreegridrow": 2,
+      "nbtreegridrowdef": 2,
+      "nbtreegridcolumndef": 2,
+      "nbtreegridheadercell": 2,
+      "nbsortheader": 2,
+      "nbtreegridheadercelldef": 2,
+      "nbtreegridcell": 2,
+      "nbtreegridcelldef": 2,
+      "nbspinner": 8,
+      "nbspinnerstatus": 8,
+      "nbspinnersize": 6,
+      "nbspinnermessage": 2
+    },
+    "propValues": {
+      "nb-menu": {
+        "items": [
+          "menu"
+        ]
+      },
+      "nb-icon": {
+        "icon": [
+          "menu-2-outline",
+          "chevron-right-outline",
+          "showVisitorsStatistics ? 'arrow-forward-outline' : 'arrow-back-outline'",
+          "chevron-up-outline",
+          "chevron-down-outline",
+          "item.deltaUp ? 'arrow-up' : 'arrow-down'",
+          "phone-outline",
+          "month.down ? 'arrow-down' : 'arrow-up'",
+          "globe",
+          "github",
+          "arrow-ios-downward",
+          "grid",
+          "pause-circle-outline",
+          "list-outline",
+          "search-outline",
+          "settings-2-outline",
+          "sun-outline",
+          "icon",
+          "earningLiveUpdateCardData.delta.up ? 'arrow-up' : 'arrow-down'",
+          "item.delta.up ? 'arrow-up' : 'arrow-down'",
+          "minus",
+          "plus",
+          "shuffle-2-outline",
+          "skip-back-outline",
+          "player.paused ? 'play-circle-outline' : 'pause-circle-outline'",
+          "skip-forward-outline",
+          "repeat-outline",
+          "volume-down-outline",
+          "volume-up-outline",
+          "power-outline"
+        ],
+        "pack": [
+          "eva",
+          "fa",
+          "far",
+          "ion"
+        ],
+        "class": [
+          "flip-icon",
+          "show-hide-toggle",
+          "toggle-icon",
+          "collapse",
+          "today-icon",
+          "action-icon",
+          "direction",
+          "skip",
+          "play",
+          "volume-icon",
+          "power-icon"
+        ],
+        "click": [
+          "toggleView()",
+          "toggleStatistics()",
+          "collapse()"
+        ],
+        "class.down": [
+          "month.down"
+        ],
+        "class.up": [
+          "!month.down"
+        ],
+        "hidden": [
+          "isCollapsed()"
+        ],
+        "ngfor": [
+          "let icon of evaIcons",
+          "let icon of icons.fontAwesome",
+          "let icon of icons.fontAwesomeRegular",
+          "let icon of icons.ionicons"
+        ]
+      },
+      "nb-select": {
+        "selected": [
+          "currentTheme",
+          "type",
+          "1",
+          "position",
+          "status",
+          "selectedCurrency",
+          "commonSelectedItem",
+          "selectedItem"
+        ],
+        "selectedchange": [
+          "changeTheme($event)",
+          "getUserActivity($event); type = $event",
+          "changePeriod($event)",
+          "changeCurrency($event)"
+        ],
+        "status": [
+          "primary",
+          "info",
+          "danger",
+          "success",
+          "warning"
+        ],
+        "class": [
+          "type-select",
+          "position-select",
+          "period-select"
+        ],
+        "placeholder": [
+          "Select Showcase",
+          "Multiple Select",
+          "Cleanable",
+          "Placeholder",
+          "Custom Label",
+          "Select Groups",
+          "Disabled",
+          "Disabled Items",
+          "Disabled Groups",
+          "Round",
+          "Rectangle",
+          "Semi-round",
+          "XSmall",
+          "Small",
+          "Medium",
+          "Large",
+          "Primary",
+          "Info",
+          "Danger",
+          "Success",
+          "Warning"
+        ],
+        "multiple": [
+          ""
+        ],
+        "disabled": [
+          ""
+        ],
+        "shape": [
+          "round",
+          "rectangle",
+          "semi-round"
+        ],
+        "size": [
+          "xsmall",
+          "small",
+          "medium",
+          "large"
+        ],
+        "outline": [
+          ""
+        ],
+        "hero": [
+          ""
+        ]
+      },
+      "nb-option": {
+        "ngfor": [
+          "let theme of themes",
+          "let t of types",
+          "let p of positions",
+          "let period of types",
+          "let currency of currencies"
+        ],
+        "value": [
+          "theme.value",
+          "t",
+          "1",
+          "2",
+          "p",
+          "period",
+          "currency",
+          "3",
+          "4",
+          "21",
+          "22",
+          "23",
+          "24",
+          "31",
+          "32",
+          "33",
+          "34"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-actions": {
+        "size": [
+          "small",
+          "actionSize",
+          "medium"
+        ],
+        "fullwidth": [
+          ""
+        ]
+      },
+      "nb-action": {
+        "class": [
+          "control-item",
+          "user-action"
+        ],
+        "icon": [
+          "email-outline",
+          "bell-outline",
+          "menu-outline",
+          "search-outline",
+          "settings-2-outline"
+        ],
+        "nbisgranted": [
+          "['view', 'user']"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-search": {
+        "type": [
+          "rotate-layout",
+          "modal-zoomin",
+          "modal-move",
+          "modal-drop",
+          "modal-half",
+          "curtain",
+          "column-curtain"
+        ],
+        "tag": [
+          "rotate-layout",
+          "modal-zoomin",
+          "modal-move",
+          "modal-drop",
+          "modal-half",
+          "curtain",
+          "column-curtain"
+        ]
+      },
+      "nb-user": {
+        "nbcontextmenu": [
+          "userMenu"
+        ],
+        "onlypicture": [
+          "userPictureOnly"
+        ],
+        "name": [
+          "user?.name",
+          "c.user.name",
+          "user.name",
+          "Han Solo"
+        ],
+        "picture": [
+          "user?.picture",
+          "c.user.picture"
+        ],
+        "title": [
+          "c.type",
+          "user.title"
+        ],
+        "size": [
+          "large"
+        ]
+      },
+      "nb-layout": {
+        "windowmode": [
+          ""
+        ]
+      },
+      "nb-layout-header": {
+        "fixed": [
+          ""
+        ]
+      },
+      "nb-sidebar": {
+        "class": [
+          "menu-sidebar"
+        ],
+        "tag": [
+          "menu-sidebar"
+        ],
+        "responsive": [
+          ""
+        ]
+      },
+      "nb-layout-column": {
+        "class": [
+          "small"
+        ]
+      },
+      "nb-layout-footer": {
+        "fixed": [
+          ""
+        ]
+      },
+      "nb-card": {
+        "size": [
+          "large",
+          "breakpoint.width >= breakpoints.md ? 'medium' : 'giant'",
+          "tiny",
+          "medium",
+          "small",
+          "giant",
+          "breakpoint.width >= breakpoints.sm ? 'giant' : ''",
+          "breakpoint.width >= breakpoints.xxxl ? 'medium' : 'large'",
+          "xsmall"
+        ],
+        "class": [
+          "cards-container",
+          "table-card",
+          "chart-card",
+          "solar-card",
+          "own-scroll",
+          "list-card",
+          "col-md-12 col-lg-12 col-xxxl-12",
+          "actions-card",
+          "inline-form-card",
+          "form-input-card",
+          "popover-card",
+          "headings-card"
+        ],
+        "click": [
+          "on = !on"
+        ],
+        "ngclass": [
+          "{'off': !on}"
+        ],
+        "nbspinner": [
+          "true"
+        ],
+        "nbspinnerstatus": [
+          "primary",
+          "success",
+          "info",
+          "warning",
+          "danger"
+        ],
+        "nbspinnersize": [
+          "tiny",
+          "small",
+          "medium",
+          "large",
+          "giant"
+        ]
+      },
+      "nb-card-header": {
+        "status": [
+          "warning"
+        ],
+        "class": [
+          "header"
+        ]
+      },
+      "nb-card-body": {
+        "class": [
+          "checkbox-radio",
+          "result-from-dialog",
+          "debounce-card",
+          "select-group",
+          "body"
+        ]
+      },
+      "nb-tabset": {
+        "fullwidth": [
+          ""
+        ],
+        "changetab": [
+          "changeTab($event)",
+          "toggleLoadingAnimation()"
+        ]
+      },
+      "nb-tab": {
+        "tabtitle": [
+          "Orders",
+          "Profit",
+          "Contacts",
+          "Recent",
+          "year.title",
+          "Temperature",
+          "Humidity",
+          "What's up?",
+          "Second Tab",
+          "Tab 1",
+          "Tab 2",
+          "Simple Tab #1",
+          "Simple Tab #2",
+          "Simple Tab #3",
+          "Full width tab #1",
+          "Full width tab #2",
+          "Full width tab #3"
+        ],
+        "lazyload": [
+          "true"
+        ],
+        "ngfor": [
+          "let year of listData"
+        ],
+        "active": [
+          "year.active"
+        ],
+        "nbspinner": [
+          "loading"
+        ],
+        "nbspinnerstatus": [
+          "success",
+          "info"
+        ],
+        "nbspinnersize": [
+          "giant"
+        ]
+      },
+      "nb-flip-card": {
+        "showtogglebutton": [
+          "false"
+        ],
+        "flipped": [
+          "flipped"
+        ]
+      },
+      "nb-card-front": {},
+      "nb-card-back": {},
+      "nb-progress-bar": {
+        "value": [
+          "item.activeProgress",
+          "20",
+          "40",
+          "60",
+          "80",
+          "100",
+          "value"
+        ],
+        "status": [
+          "primary",
+          "info",
+          "success",
+          "warning",
+          "danger",
+          "status"
+        ],
+        "size": [
+          "tiny",
+          "small",
+          "medium",
+          "large",
+          "giant"
+        ],
+        "displayvalue": [
+          "true"
+        ]
+      },
+      "nb-reveal-card": {
+        "showtogglebutton": [
+          "false"
+        ],
+        "revealed": [
+          "revealed"
+        ]
+      },
+      "nb-list": {
+        "class": [
+          "user-activity-list"
+        ],
+        "nbinfinitelist": [
+          ""
+        ],
+        "threshold": [
+          "500"
+        ],
+        "bottomthreshold": [
+          "loadNext(firstCard)",
+          "loadNext(secondCard)"
+        ],
+        "listenwindowscroll": [
+          ""
+        ]
+      },
+      "nb-list-item": {
+        "ngfor": [
+          "let item of userActivity",
+          "let c of contacts",
+          "let c of recent",
+          "let month of year.months",
+          "let newsPost of firstCard.news",
+          "let _ of firstCard.placeholders",
+          "let newsPost of secondCard.news",
+          "let _ of secondCard.placeholders",
+          "let fruit of fruits",
+          "let user of users",
+          "let item of frontCardData; trackBy: trackByDate"
+        ],
+        "class": [
+          "contact",
+          "item"
+        ]
+      },
+      "nb-alert": {
+        "status": [
+          "primary",
+          "success",
+          "info",
+          "warning",
+          "danger"
+        ],
+        "outline": [
+          "primary",
+          "success",
+          "info",
+          "warning",
+          "danger"
+        ],
+        "accent": [
+          "info",
+          "danger",
+          "warning",
+          "primary"
+        ]
+      },
+      "nb-calendar": {
+        "date": [
+          "date",
+          "date2"
+        ],
+        "boundingmonth": [
+          "true"
+        ],
+        "showweeknumber": [
+          ""
+        ],
+        "daycellcomponent": [
+          "dayCellComponent"
+        ]
+      },
+      "nb-calendar-range": {
+        "range": [
+          "range"
+        ]
+      },
+      "nb-calendar-month-picker": {
+        "month": [
+          "month"
+        ],
+        "cellcomponent": [
+          "monthCellComponent"
+        ]
+      },
+      "nb-chat": {
+        "title": [
+          "Nebular Conversational UI"
+        ],
+        "size": [
+          "large"
+        ],
+        "status": [
+          "primary"
+        ]
+      },
+      "nb-chat-message": {
+        "ngfor": [
+          "let msg of messages"
+        ],
+        "type": [
+          "msg.type"
+        ],
+        "message": [
+          "msg.text"
+        ],
+        "reply": [
+          "msg.reply"
+        ],
+        "sender": [
+          "msg.user.name"
+        ],
+        "date": [
+          "msg.date"
+        ],
+        "files": [
+          "msg.files"
+        ],
+        "quote": [
+          "msg.quote"
+        ],
+        "latitude": [
+          "msg.latitude"
+        ],
+        "longitude": [
+          "msg.longitude"
+        ],
+        "avatar": [
+          "msg.user.avatar"
+        ]
+      },
+      "nb-chat-form": {
+        "send": [
+          "sendMessage($event)"
+        ],
+        "dropfiles": [
+          "true"
+        ]
+      },
+      "nb-card-footer": {
+        "class": [
+          "footer"
+        ]
+      },
+      "nb-radio-group": {
+        "ngmodel": [
+          "temperatureMode",
+          "humidityMode"
+        ],
+        "name": [
+          "temperature-mode",
+          "humidity-mode"
+        ],
+        "value": [
+          "radioGroupValue"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-radio": {
+        "value": [
+          "cool",
+          "warm",
+          "heat",
+          "fan",
+          "'This is value 1'",
+          "'This is value 2'",
+          "'This is value 3'",
+          "'Disabled Value'"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-accordion": {
+        "multi": [
+          ""
+        ]
+      },
+      "nb-accordion-item": {
+        "#item": [
+          ""
+        ]
+      },
+      "nb-accordion-item-header": {},
+      "nb-accordion-item-body": {},
+      "nb-stepper": {
+        "orientation": [
+          "horizontal",
+          "vertical"
+        ],
+        "#stepper": [
+          ""
+        ]
+      },
+      "nb-step": {
+        "label": [
+          "labelOne",
+          "labelTwo",
+          "Third step",
+          "labelFour",
+          "First step",
+          "Second step",
+          "Fourth step"
+        ],
+        "stepcontrol": [
+          "firstForm",
+          "secondForm",
+          "thirdForm"
+        ],
+        "hidden": [
+          "true"
+        ]
+      },
+      "nb-datepicker": {
+        "#formpicker": [
+          ""
+        ],
+        "#picker": [
+          ""
+        ],
+        "min": [
+          "min"
+        ],
+        "max": [
+          "max"
+        ]
+      },
+      "nb-rangepicker": {
+        "#rangepicker": [
+          ""
+        ]
+      },
+      "nb-checkbox": {
+        "status": [
+          "success",
+          "warning",
+          "danger"
+        ],
+        "checked": [
+          ""
+        ],
+        "disabled": [
+          ""
+        ],
+        "ngmodel": [
+          "destroyByClick",
+          "preventDuplicates",
+          "hasIcon"
+        ]
+      },
+      "nb-calendar-day-picker": {
+        "boundingmonths": [
+          "false"
+        ],
+        "visibledate": [
+          "date"
+        ],
+        "date": [
+          "selectedValue"
+        ],
+        "datechange": [
+          "select.emit($event)"
+        ]
+      },
+      "nb-select-label": {},
+      "nb-option-group": {
+        "title": [
+          "Group 1",
+          "Group 2",
+          "Group 3"
+        ],
+        "disabled": [
+          ""
+        ]
+      },
+      "nb-route-tabset": {
+        "tabs": [
+          "tabs"
+        ]
+      }
+    },
+    "internalComponents": {}
+  }
+}
